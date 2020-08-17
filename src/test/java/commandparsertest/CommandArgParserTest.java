@@ -17,14 +17,13 @@ class CommandArgParserTest {
 		int[] optionFlagStartIndices = {1, 4};
 		checkParsedValues(args1, optionFlagStartIndices);
 		
-		String[] args2 = {"mode command1", "someRandomValue", "-input", "input1.txt", "input2.txt", "input3.txt", 
+		String[] args2 = {"mode command", "someRandomValue", "-input", "input1.txt", "input2.txt", "input3.txt", 
 					"-jobcon", "jobConfig.java"};
 		int[] optionFlagStartIndices2 = {2, 6};
 		checkParsedValues(args2, optionFlagStartIndices2);
 		
-		String[] args3 = {"mode command1", "someRandomValue", "-input", "input1.txt", "input2.txt", "input3.txt", 
-				"-jobcon", "jobConfig.java"};
-		int[] optionFlagStartIndices3 = {2, 6};
+		String[] args3 = {"only mode command", "someRandomValue", "someRandomValue",};
+		int[] optionFlagStartIndices3 = {};
 		checkParsedValues(args3, optionFlagStartIndices3);
 	};
 	
