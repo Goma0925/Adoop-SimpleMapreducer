@@ -134,5 +134,5 @@ public class DataLoader {
          };
          bReader.close();
 		return lines;
-	}
+	};
 }

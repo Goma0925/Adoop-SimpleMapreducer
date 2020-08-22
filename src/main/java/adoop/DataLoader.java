@@ -100,7 +100,6 @@ public class DataLoader {
 	public String[] loadChunkByLineIndices(File file, int startIndex, int endIndex) throws IOException {
 		//This function loads a particular chunk in a file based on the line start and the end indices.
 		//return| String[] loadedLines: An array containing all the lines of the specified chunk.
-		System.out.println("Reading:["+Integer.toString(startIndex) + ","+Integer.toString(endIndex) + "]");
 		String[] loadedLines = new String[endIndex-startIndex]; 
 		FileReader fReader = new FileReader(file);
 		BufferedReader bReader = new BufferedReader(fReader);

@@ -16,26 +16,27 @@ import filehandler.FileSystemManager;
 import settings.SystemPathSettings;
 import test_usermodules.InvalidClass;
 import test_usermodules.TestMapper;
+import testsettings.TestPathSettings;
 
 class MapExecutorTest {
-
+	SystemPathSettings pathSettings = new TestPathSettings();
+	FileSystemManager fileSystemManager = new FileSystemManager(this.pathSettings);
 	@Test
 	void matchInputAndOutput() throws InvalidMapperException, InstantiationException, IllegalAccessException, IOException {
-		// 1. Mapインプットを作成
-		// 2. Constantsの出力ディレクトリから結果を取得、入力と対応を確認。
-		// *Outputディレクトリは、Consntantsから取得した方がメモリ効率上がる？
-		FileSystemManager.clearMapOutputDir();
+		//Set up the file storage
+		this.fileSystemManager.initFileSystem();
+		this.fileSystemManager.clearMapOutputDir();
 		
 		int startIndex = 0;
 		int endIndex = 50;
-		String path = "src/test/resources/input.csv";
+		String path = "src/test/resources/map-input.csv";
 		String mapperId = "Test-ID";
 		File inputFile = new File(path);
 		DataLoader loader = new DataLoader();
-		MapExecutor mExcecutor = new MapExecutor(mapperId, TestMapper.class, inputFile, startIndex, endIndex);
+		MapExecutor mExcecutor = new MapExecutor(mapperId, TestMapper.class, this.pathSettings, inputFile, startIndex, endIndex);
 		mExcecutor.run();
 		
-		File outputDir = SystemPathSettings.mapOutputBaseDir.toFile();
+		File outputDir = pathSettings.mapOutputBaseDir.toFile();
 		File outputFile = null;
 		int outputLineLength = -1;
 		String key = null;
@@ -43,7 +44,7 @@ class MapExecutorTest {
 		// each file should contain 10 keys
 		for (int i=0; i<5; i++) {
 			key = "key"+Integer.toString(i);
-			outputFile = new File(outputDir, key + "/" + SystemPathSettings.getMapOutputFileName(key, mapperId));
+			outputFile = new File(outputDir, key + "/" + pathSettings.getMapOutputFileName(key, mapperId));
 			ArrayList<String> outputLines = loader.loadFile(outputFile);
 			//Check if the first line of each file contains the key
 			Assertions.assertEquals(outputLines.get(0), key);  
@@ -57,14 +58,14 @@ class MapExecutorTest {
 	}
 	
 	@Test
-	void passInvalidMapper() {
+	void passInvalidMapper(){
 		String path = "src/test/resources/input.csv";
 		File inputFile = new File(path);
 		int startIndex = 0;
 		int endIndex = 50;
 		try {
 			@SuppressWarnings("unused")
-			MapExecutor mExcecutor = new MapExecutor("Test-ID", InvalidClass.class, inputFile, startIndex, endIndex);
+			MapExecutor mExcecutor = new MapExecutor("Test-ID", InvalidClass.class, this.pathSettings, inputFile, startIndex, endIndex);
 			fail("	MapExecutor failed to catch an exception when being passed a non-mapper class");
 		} catch (InvalidMapperException e) {
 			System.out.println("	MapExecutor successfully raised an error when being passed a non-mapper class.");

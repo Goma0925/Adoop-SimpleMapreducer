@@ -20,16 +20,18 @@ public class MapExecutor implements Runnable {
 	protected File inputFile = null;
 	protected Class<?> mapperClass = null;
 	protected String workerId = null;
-	protected Context resultContext = null;   
-	public MapExecutor(String workerId, Class<?> mapperClass, File inputFile, int startIndex, int endIndex) throws InvalidMapperException {
+	protected Context resultContext = null; 
+	protected SystemPathSettings systemPathSetting = null;
+	public MapExecutor(String workerId, Class<?> mapperClass, SystemPathSettings systemPathSetting, File inputFile, int startIndex, int endIndex) throws InvalidMapperException {
 		if (!Mapper.class.isAssignableFrom(mapperClass)) {
 			throw new InvalidMapperException(mapperClass);
-		}
+		};
 		this.workerId = workerId;
 		this.mapperClass = mapperClass;
 		this.inputFile = inputFile;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
+		this.systemPathSetting = systemPathSetting;
 		System.out.println("Worker("+this.workerId+"):"+Integer.toString(startIndex) + "/" + Integer.toString(endIndex));
 	}
 
@@ -58,14 +60,14 @@ public class MapExecutor implements Runnable {
 		DataLoader loader = new DataLoader();
 		String[] inputLines = null;
 		Mapper mapper = (Mapper) this.mapperClass.newInstance();
-		System.out.println(this.workerId + ":Loading a chunk...");
+		int chunkStartIndex = this.startIndex;
+		System.out.println(this.workerId + ":Loading a chunk["+Integer.toString(startIndex) + ","+Integer.toString(endIndex)+"]...");
 		//Read the input file
 		inputLines = loader.loadChunkByLineIndices(inputFile, startIndex, endIndex);
-		System.out.println(this.workerId + ":Loaded a chunk of size:" + Integer.toString(inputLines.length));
-		System.out.println(this.workerId + ":Last index:" + inputLines[inputLines.length-1]);
+		System.out.println(this.workerId + ":Done loading a chunk of size:" + Integer.toString(inputLines.length));
 		//Map process
 		for (int i=0; i<inputLines.length; i++) {
-			mapper.map("ID="+this.workerId+"|"+Integer.toString(i), inputLines[i], tempoContext);
+			mapper.map(Integer.toString(chunkStartIndex), inputLines[i], tempoContext);
 		}
 		System.out.println(this.workerId + ":Done processing:" + Integer.toString(inputLines.length));
 		this.resultContext  = tempoContext;
@@ -73,20 +75,19 @@ public class MapExecutor implements Runnable {
 	
 	private void writeToFiles() throws IOException {
 		//Write the results to files. Each key's associated values will be written in different files.
-		System.out.println(this.workerId + ":Writing to file..");
+		System.out.println(this.workerId + ":Writing to file.. :" + this.systemPathSetting.mapOutputBaseDir.toString());
 		String key;
 		Path keyDir;
 		ArrayList<String> valueList;
+		SystemPathSettings pathSettings = this.systemPathSetting;
 		for (Map.Entry<String, ArrayList<String>> entry : this.resultContext.getMap().entrySet()) {
 	        key = entry.getKey();
 	        valueList = entry.getValue();
-	        keyDir = Paths.get(SystemPathSettings.mapOutputBaseDir.toString() + "/"+ key);
-	        System.out.println("Target map output dir:" + keyDir.toString() +"|| FILE_EXiSTS=" +  Boolean.toString(Files.exists(keyDir)));
+	        keyDir = Paths.get(pathSettings.mapOutputBaseDir.toString() + "/"+ key);
 	        if (!Files.exists(keyDir)){
 	        	keyDir.toFile().mkdir();
-		        System.out.println("Creating map output dir:" + keyDir.toString());
 	        }
-	        File outputFile = new File(keyDir.toFile(), SystemPathSettings.getMapOutputFileName(key, this.workerId));
+	        File outputFile = new File(keyDir.toFile(), pathSettings.getMapOutputFileName(key, this.workerId));
 			FileWriter fr = new FileWriter(outputFile, true);
 			BufferedWriter br = new BufferedWriter(fr);
 			br.write(key);
