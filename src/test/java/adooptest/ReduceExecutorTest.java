@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import adoop.DataLoader;
 import adoop.ReduceExecutor;
 import exceptions.InvalidReducerException;
+import filehandler.DataLoader;
 import filehandler.FileSystemManager;
 import settings.SystemPathSettings;
 import test_usermodules.TestReducer;

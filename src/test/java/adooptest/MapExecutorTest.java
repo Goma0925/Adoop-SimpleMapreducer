@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import adoop.DataLoader;
 import adoop.MapExecutor;
 import exceptions.InvalidMapperException;
+import filehandler.DataLoader;
 import filehandler.FileSystemManager;
 import settings.SystemPathSettings;
 import test_usermodules.InvalidClass;
