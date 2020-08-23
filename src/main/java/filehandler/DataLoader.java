@@ -76,7 +76,6 @@ public class DataLoader {
 		long fileSizeInByte = Files.size(Paths.get(file.getPath())); //Size of the target file.
 		long maxChunkSizeInByte = maxChunkSize * (long)Math.pow(1000, unitTableIndex); //Size of each chunk in byte
 		double numberOfLinesInFile = this.countLines(file); //Number of lines contained in the target file.
-		System.out.println("numberOfLinesInFile="+Integer.toString((int)numberOfLinesInFile));
 		double lineSizeInByte = fileSizeInByte / numberOfLinesInFile;//Size of each line in the target file in byte.
 		int lineNumberInEachChunk = (int) (maxChunkSizeInByte / lineSizeInByte); //Number of lines for each chunk.
 		
@@ -100,7 +99,6 @@ public class DataLoader {
 	public String[] loadChunkByLineIndices(File file, int startIndex, int endIndex) throws IOException {
 		//This function loads a particular chunk in a file based on the line start and the end indices.
 		//return| String[] loadedLines: An array containing all the lines of the specified chunk.
-		System.out.println("Reading:["+Integer.toString(startIndex) + ","+Integer.toString(endIndex) + "]");
 		String[] loadedLines = new String[endIndex-startIndex]; 
 		FileReader fReader = new FileReader(file);
 		BufferedReader bReader = new BufferedReader(fReader);
