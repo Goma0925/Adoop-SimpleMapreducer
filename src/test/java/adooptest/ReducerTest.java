@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import adoop.ReduceExecutor;
 import adoop.Reducer;
 import exceptions.InvalidReducerException;
 import filehandler.DataLoader;

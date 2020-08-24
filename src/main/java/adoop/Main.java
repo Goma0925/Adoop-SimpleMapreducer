@@ -16,6 +16,5 @@ public class Main {
 	};
 	
 	public static void setup() throws IOException {
-		FileSystemManager.clearMapOutputDir();
 	}
 }
