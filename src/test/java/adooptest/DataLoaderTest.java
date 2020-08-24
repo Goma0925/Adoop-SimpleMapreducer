@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import filehandler.DataLoader;
+import io.DataLoader;
 
 public class DataLoaderTest {
 	DataLoader loader = new DataLoader();

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import exceptions.InvalidMapperException;
-import filehandler.DataLoader;
+import io.DataLoader;
 import settings.SystemPathSettings;
 
 public abstract class Mapper implements Runnable {

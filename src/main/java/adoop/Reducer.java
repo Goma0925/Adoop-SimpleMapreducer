@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import exceptions.InvalidReducerException;
-import filehandler.DataLoader;
+import io.DataLoader;
 import javafx.util.Pair;
 import settings.SystemPathSettings;
 

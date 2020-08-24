@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import adoop.Reducer;
 import exceptions.InvalidReducerException;
-import filehandler.DataLoader;
-import filehandler.FileSystemManager;
+import io.DataLoader;
+import io.FileSystemManager;
 import settings.SystemPathSettings;
 import test_usermodules.TestReducer;
 import testsettings.TestPathSettings;

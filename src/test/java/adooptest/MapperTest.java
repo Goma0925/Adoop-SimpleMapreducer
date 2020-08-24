@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import adoop.Mapper;
 import exceptions.InvalidMapperException;
-import filehandler.DataLoader;
-import filehandler.FileSystemManager;
+import io.DataLoader;
+import io.FileSystemManager;
 import settings.SystemPathSettings;
 import test_usermodules.TestMapper;
 import testsettings.TestPathSettings;
@@ -31,7 +31,7 @@ class MapperTest {
 		
 		int startIndex = 0;
 		int endIndex = 50;
-		String path = "src/test/resources/map-input.csv";
+		String path = "src/test/resources/map-input-files/map-input.csv";
 		String mapperId = "Test-ID";
 		File inputFile = new File(path);
 		DataLoader loader = new DataLoader();
