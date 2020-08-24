@@ -1,4 +1,4 @@
-package adoop;
+package io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -76,7 +76,6 @@ public class DataLoader {
 		long fileSizeInByte = Files.size(Paths.get(file.getPath())); //Size of the target file.
 		long maxChunkSizeInByte = maxChunkSize * (long)Math.pow(1000, unitTableIndex); //Size of each chunk in byte
 		double numberOfLinesInFile = this.countLines(file); //Number of lines contained in the target file.
-		System.out.println("numberOfLinesInFile="+Integer.toString((int)numberOfLinesInFile));
 		double lineSizeInByte = fileSizeInByte / numberOfLinesInFile;//Size of each line in the target file in byte.
 		int lineNumberInEachChunk = (int) (maxChunkSizeInByte / lineSizeInByte); //Number of lines for each chunk.
 		
@@ -133,5 +132,5 @@ public class DataLoader {
          };
          bReader.close();
 		return lines;
-	}
+	};
 }

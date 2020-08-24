@@ -1,12 +1,18 @@
 package test_usermodules;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import adoop.Context;
 import adoop.Reducer;
+import settings.SystemPathSettings;
 
-public class TestReducer implements Reducer {
+public class TestReducer extends Reducer {
+
+	public TestReducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles) {
+		super(workerId, systemPathSetting, inputFiles);
+	}
 
 	public void reduce(String key, ArrayList<String> inputLines, Context context) {
 		HashMap<String, Integer> countMap = new HashMap<String, Integer>();

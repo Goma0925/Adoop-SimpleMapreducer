@@ -1,5 +1,7 @@
 package adooptest;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,17 +9,18 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import adoop.DataLoader;
-import adoop.ReduceExecutor;
+import adoop.Reducer;
 import exceptions.InvalidReducerException;
-import filehandler.FileSystemManager;
+import io.DataLoader;
+import io.FileSystemManager;
 import settings.SystemPathSettings;
 import test_usermodules.TestReducer;
 import testsettings.TestPathSettings;
 
-class ReduceExecutorTest {
+class ReducerTest {
 	SystemPathSettings pathSettings = new TestPathSettings();
 	FileSystemManager fileSystemManager = new FileSystemManager(this.pathSettings);
+	
 	@Test
 	void test() throws InvalidReducerException, IOException {
 		this.fileSystemManager.initFileSystem();
@@ -39,8 +42,8 @@ class ReduceExecutorTest {
 		};
 		
 		//Run reduce
-		ReduceExecutor rExcecutor = new ReduceExecutor(reducerId, TestReducer.class, this.pathSettings, reduceInputFiles);
-		rExcecutor.run();
+		Reducer reducer = new TestReducer(reducerId, this.pathSettings, reduceInputFiles);
+		reducer.run();
 		
 		//Merge all the reduce outputs to a single output file specified at outputFilePath.
 		this.fileSystemManager.mergeReduceOutputs();
@@ -54,5 +57,6 @@ class ReduceExecutorTest {
 		//Assert if the answer and output are the same.
 		Assertions.assertArrayEquals(answerLines.toArray(), outputLines.toArray());
 	};
+
 
 }

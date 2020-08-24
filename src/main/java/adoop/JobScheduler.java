@@ -10,7 +10,7 @@ public class JobScheduler {
 	private Timer timer = new Timer();
 	private UserInterface userInterface = new CommandLineInterface();
 	private ArrayList<File> reducerInputDirs = new ArrayList<File>();
-	private JobConfiguration jobConfig = null;
+	private Configuration jobConfig = null;
 	
 	public void start(String[] args) throws Exception {
 	};

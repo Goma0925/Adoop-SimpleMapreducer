@@ -1,10 +1,17 @@
 package test_usermodules;
 
+import java.io.File;
+
 import adoop.Context;
 import adoop.Mapper;
+import settings.SystemPathSettings;
 
-public class TestMapper implements Mapper{
+public class TestMapper extends Mapper{
 
+
+	public TestMapper(String mapperId, SystemPathSettings pathSettings, File inputFile, int startIndex, int endIndex) {
+		super(mapperId, pathSettings, inputFile, startIndex, endIndex);
+	}
 
 	public void map(String key, String value, Context context) {
 		try {

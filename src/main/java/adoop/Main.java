@@ -3,7 +3,7 @@ package adoop;
 import java.io.IOException;
 import java.nio.file.Files;
 
-import filehandler.FileSystemManager;
+import io.FileSystemManager;
 import settings.SystemPathSettings;
 
 
@@ -16,6 +16,5 @@ public class Main {
 	};
 	
 	public static void setup() throws IOException {
-		FileSystemManager.clearMapOutputDir();
 	}
 }
