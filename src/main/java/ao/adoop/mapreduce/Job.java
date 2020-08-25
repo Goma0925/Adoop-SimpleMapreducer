@@ -64,4 +64,9 @@ public class Job {
 		return this.reducerClass;
 	}
 
+	public void waitForCompletion(boolean verbose) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
