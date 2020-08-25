@@ -28,7 +28,7 @@ public class JobTest {
 		
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test job name");
-		job.setMapper(mapperClass);
+		job.setMapperClass(mapperClass);
 		FileInputFormat.addInputPath(job, inputFilePath);
 		ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = job.getMapTasks();
 		for (Pair<Path, Class<? extends Mapper>> task: mapTasks) {

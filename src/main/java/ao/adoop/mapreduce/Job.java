@@ -8,6 +8,7 @@ public class Job {
 	protected Configuration config = null;
 	protected String jobName = null;
 	protected ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = new ArrayList<Pair<Path, Class<? extends Mapper>>>();
+	private Class<? extends Reducer> reducerClass;
 
 	public Job(Configuration config, String jobName) {
 		this.config = config;
@@ -22,7 +23,7 @@ public class Job {
 		return new Job(config, jobName);
 	}
 
-	public void setMapper(Class<? extends Mapper> mapperClass) {
+	public void setMapperClass(Class<? extends Mapper> mapperClass) {
 		//Set a mapper class for the first map task.
 		Pair<Path, Class<? extends Mapper>> mapTask = this.mapTasks.get(0);
 		Pair<Path, Class<? extends Mapper>> updatedMapTask = null;
@@ -53,6 +54,14 @@ public class Job {
 
 	public ArrayList<Pair<Path, Class<? extends Mapper>>> getMapTasks() {
 		return this.mapTasks;
+	}
+
+	public void setReducerClass(Class<? extends Reducer> reducerClass) {
+		this.reducerClass = reducerClass;
 	};
+	
+	public Class<? extends Reducer> getReducerClass(){
+		return this.reducerClass;
+	}
 
 }
