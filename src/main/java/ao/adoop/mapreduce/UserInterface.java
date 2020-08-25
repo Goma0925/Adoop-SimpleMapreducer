@@ -1,4 +1,4 @@
-package adoop;
+package ao.adoop.mapreduce;
 
 public interface UserInterface {
 

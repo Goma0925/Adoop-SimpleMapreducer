@@ -1,10 +1,10 @@
-package adoop;
+package ao.adoop.mapreduce;
 
 import java.io.IOException;
 import java.nio.file.Files;
 
-import io.FileSystemManager;
-import settings.SystemPathSettings;
+import ao.adoop.io.FileSystemManager;
+import ao.adoop.settings.SystemPathSettings;
 
 
 public class Main {	

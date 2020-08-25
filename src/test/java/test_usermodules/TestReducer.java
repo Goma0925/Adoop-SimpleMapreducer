@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import adoop.Context;
-import adoop.Reducer;
-import settings.SystemPathSettings;
+import ao.adoop.mapreduce.Context;
+import ao.adoop.mapreduce.Reducer;
+import ao.adoop.settings.SystemPathSettings;
 
 public class TestReducer extends Reducer {
 

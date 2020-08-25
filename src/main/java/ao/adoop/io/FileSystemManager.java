@@ -1,4 +1,4 @@
-package io;
+package ao.adoop.io;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import settings.SystemPathSettings;
+import ao.adoop.settings.SystemPathSettings;
 
 public class FileSystemManager {
 	//This class creates, deletes, validates, and organize necessary files and directories for the program.

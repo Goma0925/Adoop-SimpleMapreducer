@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import adoop.Context;
+import ao.adoop.mapreduce.Context;
 
 class ContextTest {
 	String[] testValueSet1 = {"value1", "value2", "value3", "value4", "value5",

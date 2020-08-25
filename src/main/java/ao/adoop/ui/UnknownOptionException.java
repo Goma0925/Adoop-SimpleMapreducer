@@ -1,4 +1,4 @@
-package commandparser;
+package ao.adoop.ui;
 
 public class UnknownOptionException extends Exception {
 

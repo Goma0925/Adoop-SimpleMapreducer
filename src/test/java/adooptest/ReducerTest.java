@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import adoop.Reducer;
-import exceptions.InvalidReducerException;
-import io.DataLoader;
-import io.FileSystemManager;
-import settings.SystemPathSettings;
+import ao.adoop.io.DataLoader;
+import ao.adoop.io.FileSystemManager;
+import ao.adoop.mapreduce.InvalidReducerException;
+import ao.adoop.mapreduce.Reducer;
+import ao.adoop.settings.SystemPathSettings;
 import test_usermodules.TestReducer;
 import testsettings.TestPathSettings;
 

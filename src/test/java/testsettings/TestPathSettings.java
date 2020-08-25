@@ -3,7 +3,7 @@ package testsettings;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import settings.SystemPathSettings;
+import ao.adoop.settings.SystemPathSettings;
 
 public class TestPathSettings extends SystemPathSettings{
 

@@ -2,9 +2,9 @@ package test_usermodules;
 
 import java.io.File;
 
-import adoop.Context;
-import adoop.Mapper;
-import settings.SystemPathSettings;
+import ao.adoop.mapreduce.Context;
+import ao.adoop.mapreduce.Mapper;
+import ao.adoop.settings.SystemPathSettings;
 
 public class TestMapper3 extends Mapper{
 

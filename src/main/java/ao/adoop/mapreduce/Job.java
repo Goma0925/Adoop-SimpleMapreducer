@@ -1,4 +1,4 @@
-package adoop;
+package ao.adoop.mapreduce;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package exceptions;
+package ao.adoop.mapreduce;
 
 public class InvalidMapperException extends Exception {
 	private static final long serialVersionUID = 1L;

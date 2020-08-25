@@ -1,4 +1,4 @@
-package io;
+package ao.adoop.io;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;

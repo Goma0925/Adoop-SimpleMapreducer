@@ -1,8 +1,8 @@
-package io;
+package ao.adoop.io;
 
 import java.nio.file.Path;
 
-import adoop.Job;
+import ao.adoop.mapreduce.Job;
 
 public class FileInputFormat {
 

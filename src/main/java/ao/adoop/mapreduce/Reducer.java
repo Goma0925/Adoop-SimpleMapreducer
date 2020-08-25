@@ -1,4 +1,4 @@
-package adoop;
+package ao.adoop.mapreduce;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,10 +10,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 
-import exceptions.InvalidReducerException;
-import io.DataLoader;
+import ao.adoop.io.DataLoader;
+import ao.adoop.settings.SystemPathSettings;
 import javafx.util.Pair;
-import settings.SystemPathSettings;
 
 public abstract class Reducer implements Runnable{
 	protected String workerId = null;

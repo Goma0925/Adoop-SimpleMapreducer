@@ -1,4 +1,4 @@
-package adoop;
+package ao.adoop.mapreduce;
 
 import java.util.ArrayList;
 import java.util.HashMap;

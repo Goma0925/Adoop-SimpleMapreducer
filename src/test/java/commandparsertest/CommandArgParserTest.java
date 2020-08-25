@@ -10,8 +10,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import commandparser.CommandHandler;
-import commandparser.UnknownOptionException;
+import ao.adoop.ui.CommandHandler;
+import ao.adoop.ui.UnknownOptionException;
 import javafx.util.Pair;
 
 class CommandArgParserTest {

@@ -1,4 +1,4 @@
-package adoop;
+package ao.adoop.mapreduce;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,9 +10,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 
-import exceptions.InvalidMapperException;
-import io.DataLoader;
-import settings.SystemPathSettings;
+import ao.adoop.io.DataLoader;
+import ao.adoop.settings.SystemPathSettings;
 
 public abstract class Mapper implements Runnable {
 	protected String workerId = null;

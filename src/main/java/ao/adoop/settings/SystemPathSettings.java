@@ -1,4 +1,4 @@
-package settings;
+package ao.adoop.settings;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

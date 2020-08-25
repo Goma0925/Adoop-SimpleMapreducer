@@ -9,11 +9,11 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import adoop.Mapper;
-import exceptions.InvalidMapperException;
-import io.DataLoader;
-import io.FileSystemManager;
-import settings.SystemPathSettings;
+import ao.adoop.io.DataLoader;
+import ao.adoop.io.FileSystemManager;
+import ao.adoop.mapreduce.InvalidMapperException;
+import ao.adoop.mapreduce.Mapper;
+import ao.adoop.settings.SystemPathSettings;
 import test_usermodules.TestMapper;
 import testsettings.TestPathSettings;
 
