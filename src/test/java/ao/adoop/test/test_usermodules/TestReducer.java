@@ -1,4 +1,4 @@
-package test_usermodules;
+package ao.adoop.test.test_usermodules;
 
 import java.io.File;
 import java.util.ArrayList;

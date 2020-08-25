@@ -14,7 +14,7 @@ import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.InvalidReducerException;
 import ao.adoop.mapreduce.Reducer;
 import ao.adoop.settings.SystemPathSettings;
-import test_usermodules.TestReducer;
+import ao.adoop.test.test_usermodules.TestReducer;
 import testsettings.TestPathSettings;
 
 class ReducerTest {

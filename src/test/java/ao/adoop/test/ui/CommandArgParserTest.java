@@ -1,4 +1,4 @@
-package commandparsertest;
+package ao.adoop.test.ui;
 
 import static org.junit.jupiter.api.Assertions.fail;
 

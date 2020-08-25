@@ -12,10 +12,10 @@ import ao.adoop.mapreduce.FileInputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.mapreduce.MultipleInputs;
+import ao.adoop.test.test_usermodules.UnitTestMapper;
+import ao.adoop.test.test_usermodules.UnitTestMapper2;
+import ao.adoop.test.test_usermodules.UnitTestMapper3;
 import javafx.util.Pair;
-import test_usermodules.UnitTestMapper;
-import test_usermodules.UnitTestMapper2;
-import test_usermodules.UnitTestMapper3;
 
 public class JobTest {
 	//This unit test tests Job, Configuration, and FileInputFormat's functionalities.

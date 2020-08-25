@@ -14,7 +14,7 @@ import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.InvalidMapperException;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.settings.SystemPathSettings;
-import test_usermodules.UnitTestMapper;
+import ao.adoop.test.test_usermodules.UnitTestMapper;
 import testsettings.TestPathSettings;
 
 class MapperTest {
