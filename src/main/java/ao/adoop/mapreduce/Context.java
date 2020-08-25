@@ -11,9 +11,9 @@ public class Context {
 	//It allows them to write and (key:value) pair.
 	//Each writing is directed to a certain name space. A key and value to different name spaces are
 	//managed separately and the result mapping for the name space can be retrieved by getMapping method.
-	String defaultNameSpace = null;
-	Map<String, Map<String, ArrayList<String>>> keyValMappingByNamespace = new HashMap<String, Map<String, ArrayList<String>>> ();
-
+	private String defaultNameSpace = null;
+	private Map<String, Map<String, ArrayList<String>>> keyValMappingByNamespace = new HashMap<String, Map<String, ArrayList<String>>> ();
+	private Map<String, String> baseOutputPathMappingByNamespace = new HashMap<String, String>();
 	public Context(String defaultNameSpace) {
 		this.defaultNameSpace = defaultNameSpace;
 		keyValMappingByNamespace.put(defaultNameSpace, new HashMap<String, ArrayList<String>>());
@@ -52,6 +52,10 @@ public class Context {
 			this.addPairToMapping(keyValMapping, key, value);
 			this.keyValMappingByNamespace.put(nameSpace, keyValMapping);
 		}
-		
-	} 
+		this.baseOutputPathMappingByNamespace.put(nameSpace, baseOutputPath);
+	};
+	
+	public String getBaseOutputPath(String nameSpace){
+		return this.baseOutputPathMappingByNamespace.get(nameSpace);
+	}
 }

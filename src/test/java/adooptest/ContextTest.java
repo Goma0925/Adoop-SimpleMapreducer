@@ -1,7 +1,5 @@
 package adooptest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -9,7 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import ao.adoop.mapreduce.Context;
-import ao.adoop.mapreduce.MutipleInputs;
+import ao.adoop.mapreduce.MultipleOutputs;
 
 class ContextTest {
 	String[] testValueSet1 = {"value1", "value2", "value3", "value4", "value5",
@@ -51,10 +49,12 @@ class ContextTest {
 	
 	@Test
 	void testWriteToNamedOutput(){
+		//To write output to different locations, use MutipleInputs wrapper with Context.
+		//This API is a mimic from the Hadoop API.
 		ArrayList<String> nameSpaces = new ArrayList<String>();
 		String defaultNameSpace = "DEFAULT";
 		Context context = new Context(defaultNameSpace);
-		MutipleInputs mutipleInputs = new MutipleInputs(context);
+		MultipleOutputs multipleOutputs = new MultipleOutputs(context);
 		String key = "";
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
 			String nameSpace = "Set" + Integer.toString(setNum);
@@ -63,13 +63,13 @@ class ContextTest {
 			for (int i=0; i<valueSets[setNum].length; i++) {
 				//Put items at an odd number index with key "1", items at an even number index with key "0"
 				key = Integer.toString(i%2);
-				mutipleInputs.write(nameSpace, key, valueSets[setNum][i], baseOutputPath);				
+				multipleOutputs.write(nameSpace, key, valueSets[setNum][i], baseOutputPath);				
 			}
 		};
 		
-		//Check if each name space contains all the values for the corresponding set.
+		//Check if the context contains all the values in the corresponding set for each name space.
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
-			//Get the keyValMapping for each space.
+			//Get the keyValMapping for each name space.
 			String nameSpace = "Set" + Integer.toString(setNum);
 			Map<String, ArrayList<String>> keyValMapping = context.getMapping(nameSpace);
 			
@@ -84,6 +84,12 @@ class ContextTest {
 			valueList = keyValMapping.get(key);
 			answerValueList = getItemsAtOddIndex(valueSets[setNum]);
 			Assertions.assertArrayEquals(answerValueList.toArray(), valueList.toArray());
+		};
+		
+		//Check if the context contains the correct baseOutputPath for each name space.
+		for (String nameSpace: nameSpaces) {
+			String baseOutputPath = context.getBaseOutputPath(nameSpace);
+			Assertions.assertEquals("/"+nameSpace, baseOutputPath);
 		}
 	}
 	

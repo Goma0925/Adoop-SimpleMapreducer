@@ -11,7 +11,7 @@ import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.FileInputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
-import ao.adoop.mapreduce.MutipleInputs;
+import ao.adoop.mapreduce.MultipleInputs;
 import javafx.util.Pair;
 import test_usermodules.TestMapper;
 import test_usermodules.TestMapper2;
@@ -55,7 +55,7 @@ public class JobTest {
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test job name");
 		for (int i=0; i<inputFilePaths.length; i++) {
-			MutipleInputs.addInputPath(job, inputFilePaths[i], mapperClasses.get(i));
+			MultipleInputs.addInputPath(job, inputFilePaths[i], mapperClasses.get(i));
 		};
 		
 		ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = job.getMapTasks();
