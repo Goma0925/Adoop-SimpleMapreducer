@@ -27,7 +27,11 @@ public abstract class Mapper implements Runnable {
 		this.endIndex = endIndex;
 		this.inputFile = inputFile;
 		this.pathSetting = pathSettings;
-	}
+	};
+	
+	//This method is intended to be overwritten when the sub class mapper wants to use MutipleOutputs 
+	// in order to write results to different output locations.
+	protected void setup(Context context) {};
 
 	public void run() {
 		//Run mapping

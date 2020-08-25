@@ -25,6 +25,10 @@ public abstract class Reducer implements Runnable{
 		this.inputFiles = inputFiles;
 		this.systemPathSetting = systemPathSetting;
 	}
+	
+	//This method is intended to be overwritten when the sub class reducer wants to use MutipleOutputs 
+	// in order to write results to different output locations.
+	protected void setup(Context context) {};
 
 	public void run() {
 		System.out.println(this.workerId + ":Running Reducing Process...");
