@@ -1,9 +1,6 @@
-package ao.adoop.io;
+package ao.adoop.mapreduce;
 
 import java.nio.file.Path;
-
-import ao.adoop.mapreduce.Job;
-import ao.adoop.mapreduce.Mapper;
 
 public class MutipleInputs {
 

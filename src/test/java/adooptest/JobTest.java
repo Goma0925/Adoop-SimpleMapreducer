@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import ao.adoop.io.FileInputFormat;
-import ao.adoop.io.MutipleInputs;
 import ao.adoop.mapreduce.Configuration;
+import ao.adoop.mapreduce.FileInputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
+import ao.adoop.mapreduce.MutipleInputs;
 import javafx.util.Pair;
 import test_usermodules.TestMapper;
 import test_usermodules.TestMapper2;
