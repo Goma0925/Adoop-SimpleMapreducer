@@ -3,10 +3,13 @@ package adooptest;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.naming.InvalidNameException;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import ao.adoop.mapreduce.Context;
+import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.MultipleOutputs;
 
 class ContextTest {
@@ -20,8 +23,7 @@ class ContextTest {
 	
 	@Test
 	void testWrite() {
-		String defaultNameSpace = "DEFAULT";
-		Context context = new Context(defaultNameSpace);
+		Context context = new Context();
 		
 		//Write to the default output name space
 		String key = "";
@@ -32,7 +34,7 @@ class ContextTest {
 		}
 		
 		//Get the map of a default name space that stores the written results.
-		Map<String, ArrayList<String>> keyValMapping = context.getMapping();
+		Map<String, ArrayList<String>> keyValMapping = context.getDefaultMapping();
 		
 		//Check the results for key "0"
 		key = "0";
@@ -48,30 +50,42 @@ class ContextTest {
 	};
 	
 	@Test
-	void testWriteToNamedOutput(){
+	void testWriteToNamedOutput() throws InvalidNameException{
 		//To write output to different locations, use MutipleInputs wrapper with Context.
 		//This API is a mimic from the Hadoop API.
-		ArrayList<String> nameSpaces = new ArrayList<String>();
-		String defaultNameSpace = "DEFAULT";
-		Context context = new Context(defaultNameSpace);
+		ArrayList<String> namedOutputs = new ArrayList<String>();
+		Context context = new Context();
+		
+		//Set namedOutputs to store key & val pairs.
+		for (int setNum=0; setNum<valueSets.length; setNum++) {
+			String namedOutput = "Set" + Integer.toString(setNum);
+			namedOutputs.add(namedOutput);
+		};
+		
+		context.setNamedOutputs(namedOutputs);
 		MultipleOutputs multipleOutputs = new MultipleOutputs(context);
+		
+		//Check if writing to an unregistered namedOutput fails.
+		Assertions.assertThrows(InvalidNameException.class, () -> {
+			multipleOutputs.write("Unregistered name", "key", "value", "test/path");				
+		});
+		
 		String key = "";
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
-			String nameSpace = "Set" + Integer.toString(setNum);
-			String baseOutputPath = "/"+nameSpace;
-			nameSpaces.add(nameSpace);
+			String namedOutput = namedOutputs.get(setNum);
+			String baseOutputPath = "/"+namedOutput;
 			for (int i=0; i<valueSets[setNum].length; i++) {
 				//Put items at an odd number index with key "1", items at an even number index with key "0"
 				key = Integer.toString(i%2);
-				multipleOutputs.write(nameSpace, key, valueSets[setNum][i], baseOutputPath);				
+				multipleOutputs.write(namedOutput, key, valueSets[setNum][i], baseOutputPath);				
 			}
 		};
 		
 		//Check if the context contains all the values in the corresponding set for each name space.
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
 			//Get the keyValMapping for each name space.
-			String nameSpace = "Set" + Integer.toString(setNum);
-			Map<String, ArrayList<String>> keyValMapping = context.getMapping(nameSpace);
+			String namedOutput = "Set" + Integer.toString(setNum);
+			Map<String, ArrayList<String>> keyValMapping = context.getNamedMapping(namedOutput);
 			
 			//Check the results for key "0"
 			key = "0";
@@ -87,9 +101,9 @@ class ContextTest {
 		};
 		
 		//Check if the context contains the correct baseOutputPath for each name space.
-		for (String nameSpace: nameSpaces) {
-			String baseOutputPath = context.getBaseOutputPath(nameSpace);
-			Assertions.assertEquals("/"+nameSpace, baseOutputPath);
+		for (String namedOutput: namedOutputs) {
+			String baseOutputPath = context.getBaseOutputPath(namedOutput);
+			Assertions.assertEquals("/"+namedOutput, baseOutputPath);
 		}
 	}
 	

@@ -74,7 +74,7 @@ public abstract class Reducer implements Runnable{
 	};
 	
 	public Context runReduce(Pair<String, ArrayList<String>> keyAndValueList) throws InstantiationException, IllegalAccessException {
-		Context resultContext = new Context("DEFAULT");
+		Context resultContext = new Context();
 		this.reduce(keyAndValueList.getKey(), keyAndValueList.getValue(), resultContext);		
 		System.out.println(this.workerId + ":Done processing:" + Integer.toString(keyAndValueList.getValue().size()));
 		return resultContext;
@@ -84,7 +84,7 @@ public abstract class Reducer implements Runnable{
 		//Write the results to multiple files. One key per one file.
 		System.out.println(this.workerId + ":Writing to file..");
 		SystemPathSettings pathSettings = this.systemPathSetting;
-		for (Map.Entry<String, ArrayList<String>> entry : resultContext.getMapping().entrySet()) {
+		for (Map.Entry<String, ArrayList<String>> entry : resultContext.getDefaultMapping().entrySet()) {
 	        String key = entry.getKey();
 	        ArrayList<String> valueList = entry.getValue();
 	        Path keyDir = Paths.get(pathSettings.reduceOutputBaseDir.toString() + "/"+ key);

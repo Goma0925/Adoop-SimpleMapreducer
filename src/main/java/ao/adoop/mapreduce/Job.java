@@ -9,6 +9,7 @@ public class Job {
 	protected String jobName = null;
 	protected ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = new ArrayList<Pair<Path, Class<? extends Mapper>>>();
 	private Class<? extends Reducer> reducerClass;
+	private ArrayList<String> outputNameSpaces = null;//Outputs in each name space is written to different files.
 
 	public Job(Configuration config, String jobName) {
 		this.config = config;
@@ -67,6 +68,17 @@ public class Job {
 	public void waitForCompletion(boolean verbose) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	protected void addOutputNameSpace(String outputNameSpace) {
+		if (this.outputNameSpaces == null) {
+			this.outputNameSpaces = new ArrayList<String>();
+		};
+		this.outputNameSpaces.add(outputNameSpace);
+	}
+	
+	public ArrayList<String> getOutputNameSpaces(){
+		return this.outputNameSpaces;
 	}
 
 }

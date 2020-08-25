@@ -12,6 +12,7 @@ import ao.adoop.mapreduce.FileInputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.mapreduce.MultipleInputs;
+import ao.adoop.mapreduce.MultipleOutputs;
 import ao.adoop.test.test_usermodules.UnitTestMapper;
 import ao.adoop.test.test_usermodules.UnitTestMapper2;
 import ao.adoop.test.test_usermodules.UnitTestMapper3;
@@ -37,7 +38,8 @@ public class JobTest {
 		};
 	};
 	
-	void testMutipleInput() {
+	@Test
+	void testMutipleInputs() {
 		//Test if Job can configure a job with multiple mappers and a multiple input files.
 		Path[] inputFilePaths = {
 				Paths.get("src/test/resources/map-input-files/map-input.csv"),
@@ -65,5 +67,20 @@ public class JobTest {
 			Assertions.assertEquals(inputFilePaths[i], storedPath);
 			Assertions.assertEquals(mapperClasses.get(i), storedMapperClass);
 		};
+	};
+	
+	@Test
+	void testMutipleOutputs() {
+		//Test if Job holds on to the namedOutput information.
+		//This feature is used when a job outputs results to multiple files.
+		String[] outputNames = {"OUTPUT-1", "OUTPUT-2", "OUTPUT-3"};
+		
+		Configuration config = new Configuration();
+		Job job = Job.getInstance(config, "Test job name");
+		for (String outputName: outputNames) {
+			MultipleOutputs.addNamedOutput(job, outputName);
+		}
+		ArrayList<String> storedOutputNames = job.getOutputNameSpaces();
+		Assertions.assertArrayEquals(outputNames, storedOutputNames.toArray());
 	}
 }
