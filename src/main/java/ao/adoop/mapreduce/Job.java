@@ -17,6 +17,8 @@ public class Job {
 	}
 
 	public static Job getInstance(Configuration config, String jobName) {
+		//This method returns a new instance of Job.
+		//The sole reason for creating this method is to mimic the Hadoop API (Job.getInstance).
 		return new Job(config, jobName);
 	}
 
@@ -42,9 +44,10 @@ public class Job {
 		this.mapTasks.set(0, updatedMapTask);
 	};
 	
-	public void addInputAndMapperPair(Path inputPath, Class<? extends Mapper> mapperClass) {
+	protected void addInputAndMapperPair(Path inputPath, Class<? extends Mapper> mapperClass) {
 		//Append a input & mapper pair. This method is intended to be used to configure multiple
-		// input files processed by different mappers in a single job.
+		// input files, each processed by different mappers in a single job.
+		// This method is only accessible from MutipleInputs class.
 		this.mapTasks.add(new Pair<Path, Class<? extends Mapper>>(inputPath, mapperClass));
 	}
 
