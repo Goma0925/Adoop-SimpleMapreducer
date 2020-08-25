@@ -51,7 +51,7 @@ public abstract class Mapper implements Runnable {
 	
 	public void runMap() throws InstantiationException, IllegalAccessException, IOException {
 		System.out.println(this.workerId + ":Running process...");
-		Context tempoContext = new Context();
+		Context tempoContext = new Context("DEFAULT");
 		DataLoader loader = new DataLoader();
 		String[] inputLines = null;
 		int chunkStartIndex = this.startIndex;
@@ -74,7 +74,7 @@ public abstract class Mapper implements Runnable {
 		Path keyDir;
 		ArrayList<String> valueList;
 		SystemPathSettings pathSettings = this.pathSetting;
-		for (Map.Entry<String, ArrayList<String>> entry : this.resultContext.getMap().entrySet()) {
+		for (Map.Entry<String, ArrayList<String>> entry : this.resultContext.getMapping().entrySet()) {
 	        key = entry.getKey();
 	        valueList = entry.getValue();
 	        keyDir = Paths.get(pathSettings.mapOutputBaseDir.toString() + "/"+ key);
