@@ -13,9 +13,9 @@ import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.mapreduce.MultipleInputs;
 import javafx.util.Pair;
-import test_usermodules.TestMapper;
-import test_usermodules.TestMapper2;
-import test_usermodules.TestMapper3;
+import test_usermodules.UnitTestMapper;
+import test_usermodules.UnitTestMapper2;
+import test_usermodules.UnitTestMapper3;
 
 public class JobTest {
 	//This unit test tests Job, Configuration, and FileInputFormat's functionalities.
@@ -24,7 +24,7 @@ public class JobTest {
 	void testSingleInput() {
 		//Test if Job can configure a job with a single mapper and a single input file.
 		Path inputFilePath = Paths.get("src/test/resources/map-input.csv");
-		Class<? extends Mapper> mapperClass = TestMapper.class;
+		Class<? extends Mapper> mapperClass = UnitTestMapper.class;
 		
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test job name");
@@ -45,9 +45,9 @@ public class JobTest {
 				Paths.get("src/test/resources/map-input-files/map-input3.csv")
 		};
 		ArrayList<Class<? extends Mapper>> mapperClasses = new ArrayList<Class<? extends Mapper>>();
-			mapperClasses.add(TestMapper.class);
-			mapperClasses.add(TestMapper2.class);
-			mapperClasses.add(TestMapper3.class);
+			mapperClasses.add(UnitTestMapper.class);
+			mapperClasses.add(UnitTestMapper2.class);
+			mapperClasses.add(UnitTestMapper3.class);
 		
 		//Check the number of inputFilePaths and mapperClasses are the same.
 		Assertions.assertEquals(inputFilePaths.length, mapperClasses.size());

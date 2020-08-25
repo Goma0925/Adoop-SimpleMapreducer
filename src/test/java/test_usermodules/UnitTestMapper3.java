@@ -6,9 +6,9 @@ import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.settings.SystemPathSettings;
 
-public class TestMapper2 extends Mapper{
+public class UnitTestMapper3 extends Mapper{
 
-	public TestMapper2(String workerId, SystemPathSettings pathSettings, File inputFile, int startIndex, int endIndex) {
+	public UnitTestMapper3(String workerId, SystemPathSettings pathSettings, File inputFile, int startIndex, int endIndex) {
 		super(workerId, pathSettings, inputFile, startIndex, endIndex);
 	}
 

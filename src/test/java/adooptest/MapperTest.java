@@ -14,7 +14,7 @@ import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.InvalidMapperException;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.settings.SystemPathSettings;
-import test_usermodules.TestMapper;
+import test_usermodules.UnitTestMapper;
 import testsettings.TestPathSettings;
 
 class MapperTest {
@@ -35,7 +35,7 @@ class MapperTest {
 		String mapperId = "Test-ID";
 		File inputFile = new File(path);
 		DataLoader loader = new DataLoader();
-		Mapper mapper = new TestMapper(mapperId, this.pathSettings, inputFile, startIndex, endIndex);
+		Mapper mapper = new UnitTestMapper(mapperId, this.pathSettings, inputFile, startIndex, endIndex);
 		mapper.run();
 		
 		//Check output
