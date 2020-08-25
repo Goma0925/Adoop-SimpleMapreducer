@@ -43,7 +43,7 @@ public class Context {
 		return this.keyValMappingByNamespace.get(this.defaultNameSpace);
 	}
 
-	public void writeToNameSpace(String nameSpace, String key, String value, String baseOutputPath) {
+	protected void writeToNameSpace(String nameSpace, String key, String value, String baseOutputPath) {
 		Map<String, ArrayList<String>> keyValMapping = this.keyValMappingByNamespace.get(nameSpace);;
 		if (keyValMapping != null) {
 			this.addPairToMapping(keyValMapping, key, value);

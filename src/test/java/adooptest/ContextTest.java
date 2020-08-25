@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import ao.adoop.mapreduce.Context;
+import ao.adoop.mapreduce.MutipleInputs;
 
 class ContextTest {
 	String[] testValueSet1 = {"value1", "value2", "value3", "value4", "value5",
@@ -53,14 +54,16 @@ class ContextTest {
 		ArrayList<String> nameSpaces = new ArrayList<String>();
 		String defaultNameSpace = "DEFAULT";
 		Context context = new Context(defaultNameSpace);
+		MutipleInputs mutipleInputs = new MutipleInputs(context);
 		String key = "";
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
 			String nameSpace = "Set" + Integer.toString(setNum);
+			String baseOutputPath = "/"+nameSpace;
 			nameSpaces.add(nameSpace);
 			for (int i=0; i<valueSets[setNum].length; i++) {
 				//Put items at an odd number index with key "1", items at an even number index with key "0"
 				key = Integer.toString(i%2);
-				context.writeToNameSpace(nameSpace, key, valueSets[setNum][i], "/"+nameSpace);				
+				mutipleInputs.write(nameSpace, key, valueSets[setNum][i], baseOutputPath);				
 			}
 		};
 		
