@@ -2,7 +2,7 @@ package ao.adoop.mapreduce;
 
 import javafx.util.Pair;
 
-public class CommandLineInterface implements  UserInterface{
+public class VerboseInterface implements  UserInterface{
 	public void displayRunTime(String label, double runTime) {
 	    System.out.println(label + Double.toString(runTime));
 	}
