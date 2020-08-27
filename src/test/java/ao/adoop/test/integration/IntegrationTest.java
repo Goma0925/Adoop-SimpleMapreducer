@@ -1,14 +1,9 @@
 package ao.adoop.test.integration;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ao.adoop.io.FileSystemManager;
@@ -100,7 +95,7 @@ class IntegrationTest {
 		Path outputFilePath1 = Paths.get(this.pathSettings.mapOutputBaseDir.toString() + "/output.csv");
 		Path outputFilePath2 = Paths.get(this.pathSettings.mapOutputBaseDir.toString() + "/output2.csv");
 		Path answerFilePath1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs1.csv");
-		Path answerFilePath2 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs1.csv");
+		Path answerFilePath2 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs2.csv");
 		
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test Job");
