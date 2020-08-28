@@ -16,6 +16,8 @@ import ao.adoop.mapreduce.MultipleOutputs;
 import ao.adoop.settings.SystemPathSettings;
 import ao.adoop.test.test_usermodules.MapperForIntegrationTest1;
 import ao.adoop.test.test_usermodules.MapperForIntegrationTest2;
+import ao.adoop.test.test_usermodules.ReducerForIntegrationTest;
+import ao.adoop.test.utils.SimpleFileLoader;
 import testsettings.TestPathSettings;
 
 class IntegrationTest {
@@ -51,7 +53,8 @@ class IntegrationTest {
 		FileOutputFormat.setOutputFilePath(job, outputFilePath);
 		
 		job.waitForCompletion(true);
-		Assertions.assertEquals(outputFilePath.toFile(), answerFilePath.toFile());
+		Assertions.assertArrayEquals(SimpleFileLoader.readFile(outputFilePath.toFile()), 
+				SimpleFileLoader.readFile(answerFilePath.toFile()));
 	};
 	
 	@Test
@@ -80,7 +83,8 @@ class IntegrationTest {
 		FileOutputFormat.setOutputFilePath(job, outputFilePath);
 
 		job.waitForCompletion(true);
-		Assertions.assertEquals(outputFilePath.toFile(), answerFilePath.toFile());
+		Assertions.assertArrayEquals(SimpleFileLoader.readFile(outputFilePath.toFile()),
+				SimpleFileLoader.readFile(answerFilePath.toFile()));
 	};
 	
 	@Test
@@ -112,7 +116,9 @@ class IntegrationTest {
 		MultipleOutputs.addNamedOutput(job,"OUTPUT-2");
 
 		job.waitForCompletion(true);
-		Assertions.assertEquals(outputFilePath1.toFile(), answerFilePath1.toFile());
-		Assertions.assertEquals(outputFilePath2.toFile(), answerFilePath2.toFile());
+		Assertions.assertEquals(SimpleFileLoader.readFile(outputFilePath1.toFile()),
+				SimpleFileLoader.readFile(answerFilePath1.toFile()));
+		Assertions.assertEquals(SimpleFileLoader.readFile(outputFilePath2.toFile()),
+				answerFilePath2.toFile());
 	};
 }

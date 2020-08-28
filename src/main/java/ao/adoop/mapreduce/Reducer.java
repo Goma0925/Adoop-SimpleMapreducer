@@ -108,5 +108,5 @@ public abstract class Reducer implements Runnable{
 	    }
 	};
 
-	public abstract void reduce(String key, ArrayList<String> inputLines, Context context);
+	public abstract void reduce(String key, ArrayList<String> values, Context context);
 }

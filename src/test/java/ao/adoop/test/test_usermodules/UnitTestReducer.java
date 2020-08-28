@@ -8,9 +8,9 @@ import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.Reducer;
 import ao.adoop.settings.SystemPathSettings;
 
-public class TestReducer extends Reducer {
+public class UnitTestReducer extends Reducer {
 
-	public TestReducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles) {
+	public UnitTestReducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles) {
 		super(workerId, systemPathSetting, inputFiles);
 	}
 
