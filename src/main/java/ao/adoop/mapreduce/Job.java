@@ -65,9 +65,8 @@ public class Job {
 		return this.reducerClass;
 	}
 
-	public void waitForCompletion(boolean verbose) {
-		// TODO Auto-generated method stub
-		
+	public void waitForCompletion(boolean verbose) throws Exception {
+		new JobScheduler(this, verbose);
 	}
 
 	protected void addOutputNameSpace(String outputNameSpace) {

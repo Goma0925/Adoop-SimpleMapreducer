@@ -21,7 +21,7 @@ public abstract class Mapper implements Runnable {
 	protected Context resultContext = null; 
 	protected SystemPathSettings pathSetting = null;
 	
-	public Mapper(String workerId, SystemPathSettings pathSettings, File inputFile, int startIndex, int endIndex) {
+	public Mapper(String workerId, SystemPathSettings pathSettings, File inputFile, Integer startIndex, Integer endIndex) {
 		this.workerId = workerId;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
