@@ -101,9 +101,9 @@ public class FileSystemManager {
 		return results;
 	}
 	
-	public void mergeReduceOutputs() throws IOException {
-		//Merge mutiple reduce files in the reduceOutputBuffer directory to a single output file.
-		File finalOutputFile = new File(this.pathSettings.finalOutputDir.toString(), this.pathSettings.finalOutputFileName + this.pathSettings.finalOutputFileExtension);
+	public void mergeReduceOutputs(File finalOutputFile) throws IOException {
+		//Merge multiple reduce files in the reduceOutputBuffer directory to a single output file
+		//specified as finalOutputFile.
 		ArrayList<File> reduceOutputFiles = this.getAllChildFiles(this.pathSettings.reduceOutputBaseDir.toFile());
 		BufferedReader bReader = null;
 		PrintWriter pWriter = new PrintWriter(finalOutputFile);

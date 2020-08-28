@@ -14,7 +14,7 @@ import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.InvalidReducerException;
 import ao.adoop.mapreduce.Reducer;
 import ao.adoop.settings.SystemPathSettings;
-import ao.adoop.test.test_usermodules.TestReducer;
+import ao.adoop.test.test_usermodules.UnitTestReducer;
 import testsettings.TestPathSettings;
 
 class ReducerTest {
@@ -31,7 +31,7 @@ class ReducerTest {
 		DataLoader loader = new DataLoader();
 		String reduceInputFileDirPath = "src/test/resources/reduce-input-files";
 		String reduceOutputAnswerFilePath = "src/test/resources/reduce-test-answer/reduce-unit-test-answer.csv";
-		String outputFilePath = this.pathSettings.finalOutputDir.toString() + "/" + this.pathSettings.reduceOutputFileName.toString() + this.pathSettings.reduceOutputFileExtension.toString();
+		String outputFilePathStr = this.pathSettings.finalOutputDir.toString() + "/output.csv";
 		
 		//Get the reduce input file paths
 		File[] reduceInputFilesInArray = new File(reduceInputFileDirPath).listFiles();
@@ -42,15 +42,15 @@ class ReducerTest {
 		};
 		
 		//Run reduce
-		Reducer reducer = new TestReducer(reducerId, this.pathSettings, reduceInputFiles);
+		Reducer reducer = new UnitTestReducer(reducerId, this.pathSettings, reduceInputFiles);
 		reducer.run();
 		
 		//Merge all the reduce outputs to a single output file specified at outputFilePath.
-		this.fileSystemManager.mergeReduceOutputs();
+		this.fileSystemManager.mergeReduceOutputs(new File(outputFilePathStr));
 		
 		//Check the output
 		ArrayList<String> answerLines = loader.loadFile(new File(reduceOutputAnswerFilePath));
-		ArrayList<String> outputLines = loader.loadFile(new File(outputFilePath));
+		ArrayList<String> outputLines = loader.loadFile(new File(outputFilePathStr));
 		
 		//Assert if the numbers of lines in the answer and the output are the same
 		Assertions.assertEquals(answerLines.size(), outputLines.size());

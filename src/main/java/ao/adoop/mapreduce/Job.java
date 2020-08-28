@@ -1,5 +1,6 @@
 package ao.adoop.mapreduce;
 
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import javafx.util.Pair;
@@ -10,12 +11,11 @@ public class Job {
 	protected ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = new ArrayList<Pair<Path, Class<? extends Mapper>>>();
 	private Class<? extends Reducer> reducerClass;
 	private ArrayList<String> outputNameSpaces = null;//Outputs in each name space is written to different files.
-
+	private Path finalOutputDir = null;
+	
 	public Job(Configuration config, String jobName) {
 		this.config = config;
 		this.jobName = jobName;
-		//Add a default map task
-		this.mapTasks.add(new Pair<Path, Class<? extends Mapper>>(null, null));
 	}
 
 	public static Job getInstance(Configuration config, String jobName) {
@@ -26,6 +26,10 @@ public class Job {
 
 	public void setMapperClass(Class<? extends Mapper> mapperClass) {
 		//Set a mapper class for the first map task.
+		if (mapTasks.size() == 0) {
+			//Create a new mapTask if it doesn't exist.
+			this.mapTasks.add(new Pair<Path, Class<? extends Mapper>>(null, null));
+		}
 		Pair<Path, Class<? extends Mapper>> mapTask = this.mapTasks.get(0);
 		Pair<Path, Class<? extends Mapper>> updatedMapTask = null;
 		if (mapTask.getValue() == null) {
@@ -37,6 +41,10 @@ public class Job {
 	
 	public void setInputPath(Path inputPath) {
 		//Set a input path for the first map task.
+		if (mapTasks.size() == 0) {
+			//Create a new mapTask if it doesn't exist.
+			this.mapTasks.add(new Pair<Path, Class<? extends Mapper>>(null, null));
+		}
 		Pair<Path, Class<? extends Mapper>> mapTask = this.mapTasks.get(0);
 		Pair<Path, Class<? extends Mapper>> updatedMapTask = null;
 		if (mapTask.getKey() == null) {
@@ -66,7 +74,7 @@ public class Job {
 	}
 
 	public void waitForCompletion(boolean verbose) throws Exception {
-		new JobScheduler(this, verbose);
+		new JobScheduler(this, verbose).start();
 	}
 
 	protected void addOutputNameSpace(String outputNameSpace) {
@@ -78,6 +86,18 @@ public class Job {
 	
 	public ArrayList<String> getOutputNameSpaces(){
 		return this.outputNameSpaces;
+	}
+
+	public void setOutputPath(Path finalOutputDir) {
+		if (!finalOutputDir.toFile().isDirectory()) {
+			this.finalOutputDir = finalOutputDir;
+		}else {
+			new NotDirectoryException("The output path must be a directory: " + finalOutputDir.toString());
+		}
+	}
+
+	public Path getOutputPath() {
+		return this.finalOutputDir;
 	}
 
 }

@@ -70,6 +70,16 @@ public class JobTest {
 	};
 	
 	@Test
+	void testSingleOutput() {
+		Path outputFilePath = Paths.get("some/output/dir/path");
+		Configuration config = new Configuration();
+		Job job = Job.getInstance(config, "Test job name");
+		
+		FileInputFormat.setOutputPath(job, outputFilePath);
+		Assertions.assertEquals(outputFilePath, job.getOutputPath());
+	}
+	
+	@Test
 	void testMutipleOutputs() {
 		//Test if Job holds on to the namedOutput information.
 		//This feature is used when a job outputs results to multiple files.

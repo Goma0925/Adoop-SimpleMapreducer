@@ -29,7 +29,7 @@ class IntegrationTest {
 //	}
 	
 	@Test
-	void testSingleMapperSingleReducer() {
+	void testSingleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	1 input file
 		//	1 mapper class for the input file
@@ -55,7 +55,7 @@ class IntegrationTest {
 	};
 	
 	@Test
-	void testMultipleMapperSingleReducer() {
+	void testMultipleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	2 input file
 		//	2 mapper classes for each input file
@@ -84,7 +84,7 @@ class IntegrationTest {
 	};
 	
 	@Test
-	void testMultipleMapperSingleReducerWithMutipleOutputFiles() {
+	void testMultipleMapperSingleReducerWithMutipleOutputFiles() throws Exception {
 		//This test checks for the case:
 		//	2 input file
 		//	2 mapper classes for each input file

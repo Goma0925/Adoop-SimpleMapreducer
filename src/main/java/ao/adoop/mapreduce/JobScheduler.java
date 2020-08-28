@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 
 import javafx.util.Pair;
 import ao.adoop.io.DataLoader;
+import ao.adoop.io.FileSystemManager;
 import ao.adoop.settings.SystemPathSettings;
 
 public class JobScheduler {
@@ -26,10 +27,13 @@ public class JobScheduler {
 		}else {
 			this.userInterface = new NonVerboseInterface();
 		};
-		this.start();
 	}
 
-	public void start() throws Exception{
+	protected void start() throws Exception{
+		FileSystemManager fileManager = new FileSystemManager(this.pathSettings);
+		fileManager.clearMapOutputDir();
+		fileManager.clearReduceOutputDir();
+		
 		long threadMaxThreashhold = 30;
 		String threadMaxThreashholdUnit = "MB";
 		
@@ -43,8 +47,8 @@ public class JobScheduler {
 			this.runMap(mapperClass, inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);
 		}
 		
-		
 		this.runReduce(this.job.getReducerClass());
+		fileManager.mergeReduceOutputs(this.job.getOutputPath().toFile());
 	};
 
 	public void runMap(Class<?> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {
