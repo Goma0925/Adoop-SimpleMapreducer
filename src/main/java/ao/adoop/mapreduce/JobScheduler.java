@@ -1,6 +1,7 @@
 package ao.adoop.mapreduce;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -31,8 +32,8 @@ public class JobScheduler {
 
 	protected void start() throws Exception{
 		FileSystemManager fileManager = new FileSystemManager(this.pathSettings);
-		fileManager.clearMapOutputDir();
-		fileManager.clearReduceOutputDir();
+		fileManager.clearMapOutputBufferDir();
+		fileManager.clearReduceOutputBufferDir();
 		
 		long threadMaxThreashhold = 30;
 		String threadMaxThreashholdUnit = "MB";
@@ -48,7 +49,9 @@ public class JobScheduler {
 		}
 		
 		this.runReduce(this.job.getReducerClass());
-		fileManager.mergeReduceOutputs(this.job.getOutputPath().toFile());
+		
+		 this.pathSettings.reduceOutputBufferDir.toFile();
+		fileManager.mergeReduceOutputs(this.pathSettings.reduceOutputBufferDir.toFile(), this.job.getOutputPath().toFile());
 	};
 
 	public void runMap(Class<?> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {
@@ -59,16 +62,17 @@ public class JobScheduler {
         
 		Mapper[] workers = new Mapper[numberOfThreads];
         Mapper worker = null;
-        Constructor<?> mapperConstructor = mapperClass.getDeclaredConstructor(new Class[] {String.class, SystemPathSettings.class, File.class, Integer.class, Integer.class});
+        Constructor<?> mapperConstructor = mapperClass.getDeclaredConstructor(new Class[] {String.class, SystemPathSettings.class, File.class, int.class, int.class, String[].class});
         mapperConstructor.setAccessible(true);
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of 2 threads  
         
         this.userInterface.doMappingStart(numberOfThreads);
         for (int i = 0; i < chunkIndices.size(); i++) {
         	String workerId = Integer.toString(i);
+            String[] namedOutputs = this.job.getNamedOutputs().toArray(new String[job.getNamedOutputs().size()]);
         	//Each mapper worker(thread) will read from the input file, map, and write results to a file.
-        	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.pathSettings, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1]});
-            executor.execute(worker);//Run the thread 
+        	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.pathSettings, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1], namedOutputs});
+        	executor.execute(worker);//Run the thread 
             workers[i] = worker;
 	      };
         executor.shutdown(); 
@@ -83,7 +87,7 @@ public class JobScheduler {
 	};
 	
 	private ArrayList<File> loadReducerInputDirs() {
-		File[] listOfElements = this.pathSettings.mapOutputBaseDir.toFile().listFiles();
+		File[] listOfElements = this.pathSettings.mapOutputBufferDir.toFile().listFiles();
 		ArrayList<File> targetDirs = new ArrayList<File>();
 		for (File ele: listOfElements) {
 			if (ele.isDirectory()) {
@@ -99,13 +103,18 @@ public class JobScheduler {
 			this.reducerInputDirs = this.loadReducerInputDirs();
 			this.timer.startCpuTimer();
 		};
+
+		//Set up the Reduce phase
         int numberOfThreads = this.reducerInputDirs.size();
         this.userInterface.doReducingStart(numberOfThreads);
-        Constructor<?> reducerConstructor = reducerClass.getDeclaredConstructor(new Class[] {String.class, SystemPathSettings.class, ArrayList.class});
+        Constructor<?> reducerConstructor = reducerClass.getDeclaredConstructor(new Class[] {String.class, SystemPathSettings.class, ArrayList.class, String[].class});
         reducerConstructor.setAccessible(true);
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of 2 threads  
         Reducer[] workers = new  Reducer[numberOfThreads];
         Reducer worker = null;
+        String[] namedOutputs = this.job.getNamedOutputs().toArray(new String[job.getNamedOutputs().size()]);
+        
+        //Run the Reduce phase
         for (int i=0; i<numberOfThreads; i++) {
 			ArrayList<File> inputFiles = new ArrayList<File>();
 			//Create a list of input files for the reducer from the reducer input directory.
@@ -113,10 +122,11 @@ public class JobScheduler {
 				if (item.isFile()) {
 					inputFiles.add(item);
 				}
-			}
+			};
         	String id = Integer.toString(i);
-        	worker = (Reducer) reducerConstructor.newInstance(new Object[] {id, this.pathSettings, inputFiles});
+        	worker = (Reducer) reducerConstructor.newInstance(new Object[] {id, this.pathSettings, inputFiles, namedOutputs});
             executor.execute(worker);//Run the thread 
+        	worker.run();
             workers[i] = worker;
 		};
         executor.shutdown(); 

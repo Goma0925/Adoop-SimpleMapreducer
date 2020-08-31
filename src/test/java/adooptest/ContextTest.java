@@ -62,7 +62,7 @@ class ContextTest {
 			namedOutputs.add(namedOutput);
 		};
 		
-		context.setNamedOutputs(namedOutputs);
+		context.setNamedOutputs(namedOutputs.toArray(new String[namedOutputs.size()]));
 		MultipleOutputs multipleOutputs = new MultipleOutputs(context);
 		
 		//Check if writing to an unregistered namedOutput fails.

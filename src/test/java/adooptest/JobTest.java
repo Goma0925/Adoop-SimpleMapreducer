@@ -90,7 +90,7 @@ public class JobTest {
 		for (String outputName: outputNames) {
 			MultipleOutputs.addNamedOutput(job, outputName);
 		}
-		ArrayList<String> storedOutputNames = job.getOutputNameSpaces();
+		ArrayList<String> storedOutputNames = job.getNamedOutputs();
 		Assertions.assertArrayEquals(outputNames, storedOutputNames.toArray());
 	}
 }

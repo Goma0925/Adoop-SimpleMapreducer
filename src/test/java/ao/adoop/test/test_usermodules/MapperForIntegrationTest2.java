@@ -8,15 +8,16 @@ import ao.adoop.settings.SystemPathSettings;
 
 public class MapperForIntegrationTest2 extends Mapper {
 
-	public MapperForIntegrationTest2(String workerId, SystemPathSettings pathSettings, File inputFile, int startIndex,
-			int endIndex) {
-		super(workerId, pathSettings, inputFile, startIndex, endIndex);
+
+	public MapperForIntegrationTest2(String workerId, SystemPathSettings pathSettings, File inputFile,
+			int startIndex, int endIndex, String[] addedNamedOutputs) {
+		super(workerId, pathSettings, inputFile, startIndex, endIndex, addedNamedOutputs);
 	}
 
 	@Override
 	public void map(String key, String value, Context context) {
-		// TODO Auto-generated method stub
-
+		String[] parts = value.split(",");
+		context.write(parts[2], parts[3]);
 	}
 
 }

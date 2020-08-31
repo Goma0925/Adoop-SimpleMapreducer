@@ -8,9 +8,9 @@ import ao.adoop.settings.SystemPathSettings;
 
 public class MapperForIntegrationTest1 extends Mapper {
 
-	public MapperForIntegrationTest1(String workerId, SystemPathSettings pathSettings, File inputFile, Integer startIndex,
-			Integer endIndex) {
-		super(workerId, pathSettings, inputFile, startIndex, endIndex);
+	public MapperForIntegrationTest1(String workerId, SystemPathSettings pathSettings, File inputFile,
+			int startIndex, int endIndex, String[] addedNamedOutputs) {
+		super(workerId, pathSettings, inputFile, startIndex, endIndex, addedNamedOutputs);
 	}
 
 	@Override

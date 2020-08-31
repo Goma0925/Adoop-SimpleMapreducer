@@ -38,7 +38,11 @@ public class Context {
 	
 	public Map<String, ArrayList<String>> getNamedMapping(String namedOutput){
 		//Return the mapping associated with the defaultNamedOutput if no namedOutput is given. 
-		return this.keyValMappingByNamedOutputs.get(namedOutput);
+		if (
+				this.keyValMappingByNamedOutputs == null) {return null;
+		}else{
+			return this.keyValMappingByNamedOutputs.get(namedOutput);
+		}
 	}
 
 	protected void writeToNamedOutput(String namedOutput, String key, String value, String baseOutputPath) throws InvalidNameException {
@@ -60,12 +64,12 @@ public class Context {
 		return this.baseOutputPathMappingByNamedOutputs.get(namedOutput);
 	}
 
-	public void setNamedOutputs(ArrayList<String> namedOutputs) {
+	public void setNamedOutputs(String[] addedNamedOutputs) {
 		//This method sets namedOutputs to which a client can record a key & value pair, separately 
 		//from the defaultKeyValMapping.
 		this.baseOutputPathMappingByNamedOutputs = new HashMap<String, String>();
 		this.keyValMappingByNamedOutputs = new HashMap<String, Map<String, ArrayList<String>>>();
-		for (String namedOutput: namedOutputs) {
+		for (String namedOutput: addedNamedOutputs) {
 			this.baseOutputPathMappingByNamedOutputs.put(namedOutput, "");
 			this.keyValMappingByNamedOutputs.put(namedOutput, new HashMap<String, ArrayList<String>>());
 		}

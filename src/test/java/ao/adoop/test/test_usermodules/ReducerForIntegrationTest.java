@@ -9,9 +9,9 @@ import ao.adoop.settings.SystemPathSettings;
 
 public class ReducerForIntegrationTest extends Reducer {
 
-	public ReducerForIntegrationTest(String workerId, SystemPathSettings systemPathSetting,
-			ArrayList<File> inputFiles) {
-		super(workerId, systemPathSetting, inputFiles);
+	public ReducerForIntegrationTest(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles,
+			String[] addedNamedOutputs) {
+		super(workerId, systemPathSetting, inputFiles, addedNamedOutputs);
 	}
 
 	@Override

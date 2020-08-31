@@ -9,8 +9,9 @@ import ao.adoop.settings.SystemPathSettings;
 public class UnitTestMapper extends Mapper{
 
 
-	public UnitTestMapper(String mapperId, SystemPathSettings pathSettings, File inputFile, int startIndex, int endIndex) {
-		super(mapperId, pathSettings, inputFile, startIndex, endIndex);
+	public UnitTestMapper(String workerId, SystemPathSettings pathSettings, File inputFile, Integer startIndex,
+			Integer endIndex, String[] addedNamedOutputs) {
+		super(workerId, pathSettings, inputFile, startIndex, endIndex, addedNamedOutputs);
 	}
 
 	public void map(String key, String value, Context context) {

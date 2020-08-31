@@ -24,8 +24,8 @@ class MapperTest {
 	void matchInputAndOutput() throws InvalidMapperException, InstantiationException, IllegalAccessException, IOException {
 		//Set up the file storage
 		this.fileSystemManager.initFileSystem();
-		this.fileSystemManager.clearMapOutputDir();
-		File outputDir = pathSettings.mapOutputBaseDir.toFile();
+		this.fileSystemManager.clearMapOutputBufferDir();
+		File outputDir = pathSettings.mapOutputBufferDir.toFile();
 		File outputFile = null;
 
 		
@@ -35,7 +35,7 @@ class MapperTest {
 		String mapperId = "Test-ID";
 		File inputFile = new File(path);
 		DataLoader loader = new DataLoader();
-		Mapper mapper = new UnitTestMapper(mapperId, this.pathSettings, inputFile, startIndex, endIndex);
+		Mapper mapper = new UnitTestMapper(mapperId, this.pathSettings, inputFile, startIndex, endIndex, new String[0]);
 		mapper.run();
 		
 		//Check output

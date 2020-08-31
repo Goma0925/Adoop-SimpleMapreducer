@@ -13,13 +13,14 @@ public class TestPathSettings extends SystemPathSettings{
 		this.systemBaseDir = Paths.get("./target/test-file-outputs");
 		this.jobConfigDir = Paths.get(systemBaseDir.toString(), "user-job-configs");
 		this.inputDir = Paths.get(systemBaseDir.toString(), "user-inputs");
-		this.mapOutputBaseDir = Paths.get(systemBaseDir.toString(), "map-outputs");
+		this.mapOutputBufferDir = Paths.get(systemBaseDir.toString(), "map-output-buffer");
 		this.mapOutputFileExtension = ".csv";
-		this.reduceOutputBaseDir = Paths.get(systemBaseDir.toString(), "reduce-outputs");;
+		this.reduceOutputBufferDir = Paths.get(systemBaseDir.toString(), "reduce-output-buffer");;
 		this.reduceOutputFileExtension = ".csv";	
 		this.finalOutputDir = Paths.get(systemBaseDir.toString(), "final-outputs");
 		this.finalOutputFileName = "output";
 		this.finalOutputFileExtension = ".csv";
+		this.namedReduceOutputBaseDir = Paths.get(systemBaseDir.toString(), "named-reduce-output-buffer");
 		
 	};
 

@@ -24,7 +24,7 @@ class ReducerTest {
 	@Test
 	void test() throws InvalidReducerException, IOException {
 		this.fileSystemManager.initFileSystem();
-		this.fileSystemManager.clearReduceOutputDir();
+		this.fileSystemManager.clearReduceOutputBufferDir();
 		
 		//Set up test
 		String reducerId = "Test-Reduce-process";
@@ -42,11 +42,11 @@ class ReducerTest {
 		};
 		
 		//Run reduce
-		Reducer reducer = new UnitTestReducer(reducerId, this.pathSettings, reduceInputFiles);
+		Reducer reducer = new UnitTestReducer(reducerId, this.pathSettings, reduceInputFiles, new String[0]);
 		reducer.run();
 		
 		//Merge all the reduce outputs to a single output file specified at outputFilePath.
-		this.fileSystemManager.mergeReduceOutputs(new File(outputFilePathStr));
+//		this.fileSystemManager.mergeReduceOutputs(new File(outputFilePathStr));
 		
 		//Check the output
 		ArrayList<String> answerLines = loader.loadFile(new File(reduceOutputAnswerFilePath));

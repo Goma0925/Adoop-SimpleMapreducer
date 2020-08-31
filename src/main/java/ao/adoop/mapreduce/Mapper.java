@@ -20,13 +20,15 @@ public abstract class Mapper implements Runnable {
 	protected File inputFile = null;
 	protected Context resultContext = null; 
 	protected SystemPathSettings pathSetting = null;
+	protected String[] addedNamedOutputs = null;
 	
-	public Mapper(String workerId, SystemPathSettings pathSettings, File inputFile, Integer startIndex, Integer endIndex) {
+	public Mapper(String workerId, SystemPathSettings pathSettings, File inputFile, Integer startIndex, Integer endIndex, String[] addedNamedOutputs) {
 		this.workerId = workerId;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
 		this.inputFile = inputFile;
 		this.pathSetting = pathSettings;
+		this.addedNamedOutputs = addedNamedOutputs;
 	};
 	
 	//This method is intended to be overwritten when the sub class mapper wants to use MutipleOutputs 
@@ -52,13 +54,16 @@ public abstract class Mapper implements Runnable {
 		}
 	};
 	
-	public void runMap() throws InstantiationException, IllegalAccessException, IOException {
+	public void runMap() throws InstantiationException, IllegalAccessException, IOException {		
 		System.out.println(this.workerId + ":Running process...");
 		Context tempoContext = new Context();
 		DataLoader loader = new DataLoader();
 		String[] inputLines = null;
 		int chunkStartIndex = this.startIndex;
 		System.out.println(this.workerId + ":Loading a chunk["+Integer.toString(startIndex) + ","+Integer.toString(endIndex)+"]...");
+		//Run the setup method
+		tempoContext.setNamedOutputs(this.addedNamedOutputs);
+		this.setup(tempoContext);
 		//Read the input file
 		inputLines = loader.loadChunkByLineIndices(inputFile, startIndex, endIndex);
 		System.out.println(this.workerId + ":Done loading a chunk of size:" + Integer.toString(inputLines.length));
@@ -72,7 +77,7 @@ public abstract class Mapper implements Runnable {
 	
 	private void writeToFiles() throws IOException {
 		//Write the results to files. Each key's associated values will be written in different files.
-		System.out.println(this.workerId + ":Writing to file.. :" + this.pathSetting.mapOutputBaseDir.toString());
+		System.out.println(this.workerId + ":Writing to file.. :" + this.pathSetting.mapOutputBufferDir.toString());
 		String key;
 		Path keyDir;
 		ArrayList<String> valueList;
@@ -80,7 +85,7 @@ public abstract class Mapper implements Runnable {
 		for (Map.Entry<String, ArrayList<String>> entry : this.resultContext.getDefaultMapping().entrySet()) {
 	        key = entry.getKey();
 	        valueList = entry.getValue();
-	        keyDir = Paths.get(pathSettings.mapOutputBaseDir.toString() + "/"+ key);
+	        keyDir = Paths.get(pathSettings.mapOutputBufferDir.toString() + "/"+ key);
 	        if (!Files.exists(keyDir)){
 	        	keyDir.toFile().mkdir();
 	        }

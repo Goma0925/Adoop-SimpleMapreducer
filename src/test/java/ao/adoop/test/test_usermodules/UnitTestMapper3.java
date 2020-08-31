@@ -8,8 +8,9 @@ import ao.adoop.settings.SystemPathSettings;
 
 public class UnitTestMapper3 extends Mapper{
 
-	public UnitTestMapper3(String workerId, SystemPathSettings pathSettings, File inputFile, int startIndex, int endIndex) {
-		super(workerId, pathSettings, inputFile, startIndex, endIndex);
+	public UnitTestMapper3(String workerId, SystemPathSettings pathSettings, File inputFile, Integer startIndex,
+			Integer endIndex, String[] addedNamedOutputs) {
+		super(workerId, pathSettings, inputFile, startIndex, endIndex, addedNamedOutputs);
 	}
 
 	@Override

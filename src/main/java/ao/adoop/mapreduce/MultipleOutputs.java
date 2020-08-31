@@ -15,6 +15,6 @@ public class MultipleOutputs {
 		
 	}
 	public static void addNamedOutput(Job job, String namedOutput) {
-		job.addOutputNameSpace(namedOutput);
+		job.addNamedOutput(namedOutput);
 	}
 }

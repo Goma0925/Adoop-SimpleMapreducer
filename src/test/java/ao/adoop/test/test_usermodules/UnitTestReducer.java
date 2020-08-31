@@ -10,8 +10,9 @@ import ao.adoop.settings.SystemPathSettings;
 
 public class UnitTestReducer extends Reducer {
 
-	public UnitTestReducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles) {
-		super(workerId, systemPathSetting, inputFiles);
+	public UnitTestReducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles,
+			String[] addedNamedOutputs) {
+		super(workerId, systemPathSetting, inputFiles, addedNamedOutputs);
 	}
 
 	public void reduce(String key, ArrayList<String> inputLines, Context context) {

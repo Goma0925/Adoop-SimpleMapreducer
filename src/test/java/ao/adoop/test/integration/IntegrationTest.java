@@ -1,9 +1,14 @@
 package ao.adoop.test.integration;
 
+import java.io.IOException;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ao.adoop.io.FileSystemManager;
@@ -16,6 +21,7 @@ import ao.adoop.mapreduce.MultipleOutputs;
 import ao.adoop.settings.SystemPathSettings;
 import ao.adoop.test.test_usermodules.MapperForIntegrationTest1;
 import ao.adoop.test.test_usermodules.MapperForIntegrationTest2;
+import ao.adoop.test.test_usermodules.MultipleOutputReducerForIntegrationTest;
 import ao.adoop.test.test_usermodules.ReducerForIntegrationTest;
 import ao.adoop.test.utils.SimpleFileLoader;
 import testsettings.TestPathSettings;
@@ -24,13 +30,18 @@ class IntegrationTest {
 	SystemPathSettings pathSettings = new TestPathSettings();
 	FileSystemManager fManager = new FileSystemManager(this.pathSettings);
 
-//	@BeforeEach
-//	void setup() throws NotDirectoryException {
-//		this.fManager.clearMapOutputDir();
-//		this.fManager.clearReduceOutputDir();
-//	}
+	@Before
+	void setup() throws IOException {
+	}
 	
-	@Test
+	@BeforeEach
+	void cleanBuffers() throws IOException {
+		this.fManager.initFileSystem();
+		this.fManager.clearMapOutputBufferDir();
+		this.fManager.clearReduceOutputBufferDir();
+	}
+	
+//	@Test
 	void testSingleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	1 input file
@@ -38,7 +49,7 @@ class IntegrationTest {
 		//	1 reducer class.
 		//  1 output files.
 		Path inputFilePath = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
-		Path outputFilePath = Paths.get(this.pathSettings.mapOutputBaseDir.toString() + "/output.csv");
+		Path outputFilePath = Paths.get(this.pathSettings.mapOutputBufferDir.toString() + "/output.csv");
 		Path answerFilePath = Paths.get("src/test/resources/integration-test-answers/single-mapper-single-reducer.csv");
 		
 		Configuration config = new Configuration();
@@ -57,7 +68,7 @@ class IntegrationTest {
 				SimpleFileLoader.readFile(answerFilePath.toFile()));
 	};
 	
-	@Test
+//	@Test
 	void testMultipleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	2 input file
@@ -66,7 +77,7 @@ class IntegrationTest {
 		//  1 output files.
 		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputFilePath = Paths.get(this.pathSettings.mapOutputBaseDir.toString() + "/output.csv");
+		Path outputFilePath = Paths.get(this.pathSettings.mapOutputBufferDir.toString() + "/output.csv");
 		Path answerFilePath = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer.csv");
 		
 		Configuration config = new Configuration();
@@ -96,8 +107,9 @@ class IntegrationTest {
 		//  2 output files.
 		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputFilePath1 = Paths.get(this.pathSettings.mapOutputBaseDir.toString() + "/output.csv");
-		Path outputFilePath2 = Paths.get(this.pathSettings.mapOutputBaseDir.toString() + "/output2.csv");
+		Path outputDirPath = Paths.get(this.pathSettings.mapOutputBufferDir.toString());
+		Path outputFilePath1 = Paths.get(outputDirPath.toString() + "/group1/output1.csv");
+		Path outputFilePath2 = Paths.get(outputDirPath.toString() + "/group2/output2.csv");
 		Path answerFilePath1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs1.csv");
 		Path answerFilePath2 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs2.csv");
 		
@@ -109,11 +121,14 @@ class IntegrationTest {
 		MultipleInputs.addInputPath(job, inputFilePath2, MapperForIntegrationTest2.class);
 		
 		//Set a reducer class
-		job.setReducerClass(ReducerForIntegrationTest.class);
-
+		job.setReducerClass(MultipleOutputReducerForIntegrationTest.class);
+		
 		//Set an output file. 
-		MultipleOutputs.addNamedOutput(job,"OUTPUT-1");
-		MultipleOutputs.addNamedOutput(job,"OUTPUT-2");
+		FileOutputFormat.setOutputFilePath(job, outputDirPath);
+				
+		//Set named outputs. 
+		MultipleOutputs.addNamedOutput(job,"GROUP-1");
+		MultipleOutputs.addNamedOutput(job,"GROUP-2");
 
 		job.waitForCompletion(true);
 		Assertions.assertEquals(SimpleFileLoader.readFile(outputFilePath1.toFile()),

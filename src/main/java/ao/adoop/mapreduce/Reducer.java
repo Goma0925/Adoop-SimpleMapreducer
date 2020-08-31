@@ -10,6 +10,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.naming.InvalidNameException;
+
 import ao.adoop.io.DataLoader;
 import ao.adoop.settings.SystemPathSettings;
 import javafx.util.Pair;
@@ -17,13 +19,14 @@ import javafx.util.Pair;
 public abstract class Reducer implements Runnable{
 	protected String workerId = null;
 	protected ArrayList<File> inputFiles = null;
-	protected SystemPathSettings systemPathSetting;
-	
+	protected SystemPathSettings systemPathSetting = null;
+	protected String[] addedNamedOutputs = null;
 
-	public Reducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles) {
+	public Reducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles, String[] addedNamedOutputs) {
 		this.workerId = workerId;
 		this.inputFiles = inputFiles;
 		this.systemPathSetting = systemPathSetting;
+		this.addedNamedOutputs = addedNamedOutputs;
 	}
 	
 	//This method is intended to be overwritten when the sub class reducer wants to use MutipleOutputs 
@@ -44,10 +47,12 @@ public abstract class Reducer implements Runnable{
 		Context resultContext = null;
 		try {
 			resultContext = this.runReduce(keyAndValueList);
-		} catch (InstantiationException e1) {
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			e1.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvalidNameException e) {
+			e.printStackTrace();
 		}
 		try {
 			this.writeToFiles(resultContext);
@@ -73,8 +78,11 @@ public abstract class Reducer implements Runnable{
 		return new Pair<String, ArrayList<String>>(key, tempoInputLines);
 	};
 	
-	public Context runReduce(Pair<String, ArrayList<String>> keyAndValueList) throws InstantiationException, IllegalAccessException {
+	public Context runReduce(Pair<String, ArrayList<String>> keyAndValueList) throws InstantiationException, IllegalAccessException, InvalidNameException {
 		Context resultContext = new Context();
+		resultContext.setNamedOutputs(this.addedNamedOutputs);
+		//Run the setup method
+		this.setup(resultContext);
 		this.reduce(keyAndValueList.getKey(), keyAndValueList.getValue(), resultContext);		
 		System.out.println(this.workerId + ":Done processing:" + Integer.toString(keyAndValueList.getValue().size()));
 		return resultContext;
@@ -84,18 +92,41 @@ public abstract class Reducer implements Runnable{
 		//Write the results to multiple files. One key per one file.
 		System.out.println(this.workerId + ":Writing to file..");
 		SystemPathSettings pathSettings = this.systemPathSetting;
-		for (Map.Entry<String, ArrayList<String>> entry : resultContext.getDefaultMapping().entrySet()) {
+		Path reduceOutputBaseDir = pathSettings.reduceOutputBufferDir;
+		String reduceOutputFileExtension = this.systemPathSetting.reduceOutputFileExtension;
+		
+		//Write the default key & value mapping
+		Map<String, ArrayList<String>> keyValMapping = resultContext.getDefaultMapping(); 
+		this.writeEachMapping(reduceOutputBaseDir, keyValMapping, reduceOutputFileExtension);
+		this.writeFinalOutputBasePath(reduceOutputBaseDir, "", "");
+		
+		//Write each namedOutput's key & value mappings
+		for (String namedOutput: this.addedNamedOutputs) {
+			Path baseBufferOutputDir = Paths.get(this.systemPathSetting.namedReduceOutputBaseDir.toString(), namedOutput);
+			String baseFinalOutputPath = resultContext.getBaseOutputPath(namedOutput);
+			keyValMapping = resultContext.getNamedMapping(namedOutput);
+			if (keyValMapping != null) {
+				this.writeEachMapping(baseBufferOutputDir, keyValMapping, reduceOutputFileExtension);
+				this.writeFinalOutputBasePath(baseBufferOutputDir, namedOutput, baseFinalOutputPath);
+			}
+		};
+		
+	};
+	
+	private void writeEachMapping(Path baseBufferOutputDir, Map<String, ArrayList<String>> keyValMapping, String reduceOutputFileExtension) throws IOException {
+		for (Map.Entry<String, ArrayList<String>> entry : keyValMapping.entrySet()) {
 	        String key = entry.getKey();
 	        ArrayList<String> valueList = entry.getValue();
-	        Path keyDir = Paths.get(pathSettings.reduceOutputBaseDir.toString() + "/"+ key);
+	        Path keyDir = Paths.get(baseBufferOutputDir.toString() + "/"+ key);
 	        if (!Files.exists(keyDir)){
-	        	Files.createDirectory(keyDir);
+	        	keyDir.toFile().mkdirs();;
 	        }
-	        File outputFile = new File(pathSettings.reduceOutputBaseDir.toString() + "/"+ key +"/[" + key + "]-" + this.workerId + pathSettings.reduceOutputFileExtension);
+	        File outputFile = new File(baseBufferOutputDir.toString() + "/"+ key +"/[" + key + "]-" + this.workerId + reduceOutputFileExtension);
 			FileWriter fr = new FileWriter(outputFile, true);
 			BufferedWriter br = new BufferedWriter(fr);
 			String stringBuffer = "";
-			for (int i=0; i<valueList.size(); i++) {
+			int valueListSize = valueList.size();
+			for (int i=0; i<valueListSize; i++) {
 				stringBuffer = key + "," + valueList.get(i);
 				if (i != (valueList.size()-1)) {
 					//If not the last element, add a line break
@@ -107,6 +138,21 @@ public abstract class Reducer implements Runnable{
 			fr.close();
 	    }
 	};
+	
+	private void writeFinalOutputBasePath(Path baseBufferOutputDir, String namedOutput, String baseFinalOutputDir) throws IOException {
+		//This method creates a new file named "baseOutputDir.txt" in the specified directory and record a baseOutputDir
+		//for each namedOutput
+		System.out.println("baseBufferOutputDir:" + baseBufferOutputDir.toString());
+		System.out.println("namedOutput:" + namedOutput);
+		System.out.println("baseFinalOutputDir:" + baseFinalOutputDir + "\n");
+		File finalOutputBasePathFile = new File(baseBufferOutputDir.toString(), "baseOutputDir.txt");
+		FileWriter fr = new FileWriter(finalOutputBasePathFile, true);
+		BufferedWriter br = new BufferedWriter(fr);
+		br.write(baseFinalOutputDir);
+		br.close();
+		fr.close();
+	}
+	
 
-	public abstract void reduce(String key, ArrayList<String> values, Context context);
+	public abstract void reduce(String key, ArrayList<String> values, Context context) throws InvalidNameException;
 }

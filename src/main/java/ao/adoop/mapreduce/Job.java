@@ -10,7 +10,7 @@ public class Job {
 	protected String jobName = null;
 	protected ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = new ArrayList<Pair<Path, Class<? extends Mapper>>>();
 	private Class<? extends Reducer> reducerClass;
-	private ArrayList<String> outputNameSpaces = null;//Outputs in each name space is written to different files.
+	private ArrayList<String> outputNamedOutputs = null;//Outputs in each name space is written to different files.
 	private Path finalOutputDir = null;
 	
 	public Job(Configuration config, String jobName) {
@@ -73,19 +73,15 @@ public class Job {
 		return this.reducerClass;
 	}
 
-	public void waitForCompletion(boolean verbose) throws Exception {
-		new JobScheduler(this, verbose).start();
-	}
-
-	protected void addOutputNameSpace(String outputNameSpace) {
-		if (this.outputNameSpaces == null) {
-			this.outputNameSpaces = new ArrayList<String>();
+	protected void addNamedOutput(String outputNamedOutput) {
+		if (this.outputNamedOutputs == null) {
+			this.outputNamedOutputs = new ArrayList<String>();
 		};
-		this.outputNameSpaces.add(outputNameSpace);
+		this.outputNamedOutputs.add(outputNamedOutput);
 	}
 	
-	public ArrayList<String> getOutputNameSpaces(){
-		return this.outputNameSpaces;
+	public ArrayList<String> getNamedOutputs(){
+		return this.outputNamedOutputs;
 	}
 
 	public void setOutputPath(Path finalOutputDir) {
@@ -98,6 +94,11 @@ public class Job {
 
 	public Path getOutputPath() {
 		return this.finalOutputDir;
+	};
+	
+
+	public void waitForCompletion(boolean verbose) throws Exception {
+		new JobScheduler(this, verbose).start();
 	}
 
 }
