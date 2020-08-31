@@ -11,21 +11,21 @@ import org.junit.jupiter.api.Test;
 
 import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
+import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.InvalidMapperException;
 import ao.adoop.mapreduce.Mapper;
-import ao.adoop.settings.SystemPathSettings;
 import ao.adoop.test.test_usermodules.UnitTestMapper;
-import testsettings.TestPathSettings;
+import testsettings.TestConfiguration;
 
 class MapperTest {
-	SystemPathSettings pathSettings = new TestPathSettings();
-	FileSystemManager fileSystemManager = new FileSystemManager(this.pathSettings);
+	Configuration config = new TestConfiguration();
+	FileSystemManager fileSystemManager = new FileSystemManager(this.config);
 	@Test
 	void matchInputAndOutput() throws InvalidMapperException, InstantiationException, IllegalAccessException, IOException {
 		//Set up the file storage
 		this.fileSystemManager.initFileSystem();
 		this.fileSystemManager.clearMapOutputBufferDir();
-		File outputDir = pathSettings.mapOutputBufferDir.toFile();
+		File outputDir = config.mapOutputBufferDir.toFile();
 		File outputFile = null;
 
 		
@@ -35,7 +35,7 @@ class MapperTest {
 		String mapperId = "Test-ID";
 		File inputFile = new File(path);
 		DataLoader loader = new DataLoader();
-		Mapper mapper = new UnitTestMapper(mapperId, this.pathSettings, inputFile, startIndex, endIndex, new String[0]);
+		Mapper mapper = new UnitTestMapper(mapperId, this.config, inputFile, startIndex, endIndex, new String[0]);
 		mapper.run();
 		
 		//Check output
@@ -45,7 +45,7 @@ class MapperTest {
 		// each file should contain 10 keys
 		for (int i=0; i<5; i++) {
 			key = "key"+Integer.toString(i);
-			outputFile = new File(outputDir, key + "/" + pathSettings.getMapOutputFileName(key, mapperId));
+			outputFile = new File(outputDir, key + "/" + config.getMapOutputFileName(key, mapperId));
 			ArrayList<String> outputLines = loader.loadFile(outputFile);
 			//Check if the first line of each file contains the key
 			Assertions.assertEquals(outputLines.get(0), key);  

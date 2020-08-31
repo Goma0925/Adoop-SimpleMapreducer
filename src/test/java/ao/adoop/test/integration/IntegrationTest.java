@@ -18,17 +18,16 @@ import ao.adoop.mapreduce.FileOutputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.MultipleInputs;
 import ao.adoop.mapreduce.MultipleOutputs;
-import ao.adoop.settings.SystemPathSettings;
 import ao.adoop.test.test_usermodules.MapperForIntegrationTest1;
 import ao.adoop.test.test_usermodules.MapperForIntegrationTest2;
 import ao.adoop.test.test_usermodules.MultipleOutputReducerForIntegrationTest;
 import ao.adoop.test.test_usermodules.ReducerForIntegrationTest;
 import ao.adoop.test.utils.SimpleFileLoader;
-import testsettings.TestPathSettings;
+import testsettings.TestConfiguration;
 
 class IntegrationTest {
-	SystemPathSettings pathSettings = new TestPathSettings();
-	FileSystemManager fManager = new FileSystemManager(this.pathSettings);
+	Configuration config = new TestConfiguration();
+	FileSystemManager fManager = new FileSystemManager(this.config);
 
 	@Before
 	void setup() throws IOException {
@@ -49,7 +48,7 @@ class IntegrationTest {
 		//	1 reducer class.
 		//  1 output files.
 		Path inputFilePath = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
-		Path outputFilePath = Paths.get(this.pathSettings.mapOutputBufferDir.toString() + "/output.csv");
+		Path outputFilePath = Paths.get(this.config.mapOutputBufferDir.toString() + "/output.csv");
 		Path answerFilePath = Paths.get("src/test/resources/integration-test-answers/single-mapper-single-reducer.csv");
 		
 		Configuration config = new Configuration();
@@ -77,7 +76,7 @@ class IntegrationTest {
 		//  1 output files.
 		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputFilePath = Paths.get(this.pathSettings.mapOutputBufferDir.toString() + "/output.csv");
+		Path outputFilePath = Paths.get(this.config.mapOutputBufferDir.toString() + "/output.csv");
 		Path answerFilePath = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer.csv");
 		
 		Configuration config = new Configuration();
@@ -107,7 +106,7 @@ class IntegrationTest {
 		//  2 output files.
 		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputDirPath = Paths.get(this.pathSettings.mapOutputBufferDir.toString());
+		Path outputDirPath = Paths.get(this.config.mapOutputBufferDir.toString());
 		Path outputFilePath1 = Paths.get(outputDirPath.toString() + "/group1/output1.csv");
 		Path outputFilePath2 = Paths.get(outputDirPath.toString() + "/group2/output2.csv");
 		Path answerFilePath1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs1.csv");

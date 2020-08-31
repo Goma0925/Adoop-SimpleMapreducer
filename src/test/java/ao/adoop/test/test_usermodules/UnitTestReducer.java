@@ -4,15 +4,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.Reducer;
-import ao.adoop.settings.SystemPathSettings;
 
 public class UnitTestReducer extends Reducer {
 
-	public UnitTestReducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles,
+	public UnitTestReducer(String workerId, Configuration config, ArrayList<File> inputFiles,
 			String[] addedNamedOutputs) {
-		super(workerId, systemPathSetting, inputFiles, addedNamedOutputs);
+		super(workerId, config, inputFiles, addedNamedOutputs);
 	}
 
 	public void reduce(String key, ArrayList<String> inputLines, Context context) {

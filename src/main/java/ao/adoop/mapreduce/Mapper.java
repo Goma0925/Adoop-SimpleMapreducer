@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import ao.adoop.io.DataLoader;
-import ao.adoop.settings.SystemPathSettings;
 
 public abstract class Mapper implements Runnable {
 	protected String workerId = null;
@@ -19,15 +18,15 @@ public abstract class Mapper implements Runnable {
 	protected int endIndex = 0;
 	protected File inputFile = null;
 	protected Context resultContext = null; 
-	protected SystemPathSettings pathSetting = null;
+	protected Configuration config = null;
 	protected String[] addedNamedOutputs = null;
 	
-	public Mapper(String workerId, SystemPathSettings pathSettings, File inputFile, Integer startIndex, Integer endIndex, String[] addedNamedOutputs) {
+	public Mapper(String workerId, Configuration config, File inputFile, Integer startIndex, Integer endIndex, String[] addedNamedOutputs) {
 		this.workerId = workerId;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
 		this.inputFile = inputFile;
-		this.pathSetting = pathSettings;
+		this.config = config;
 		this.addedNamedOutputs = addedNamedOutputs;
 	};
 	
@@ -77,19 +76,19 @@ public abstract class Mapper implements Runnable {
 	
 	private void writeToFiles() throws IOException {
 		//Write the results to files. Each key's associated values will be written in different files.
-		System.out.println(this.workerId + ":Writing to file.. :" + this.pathSetting.mapOutputBufferDir.toString());
+		System.out.println(this.workerId + ":Writing to file.. :" + this.config.mapOutputBufferDir.toString());
 		String key;
 		Path keyDir;
 		ArrayList<String> valueList;
-		SystemPathSettings pathSettings = this.pathSetting;
+		Configuration config = this.config;
 		for (Map.Entry<String, ArrayList<String>> entry : this.resultContext.getDefaultMapping().entrySet()) {
 	        key = entry.getKey();
 	        valueList = entry.getValue();
-	        keyDir = Paths.get(pathSettings.mapOutputBufferDir.toString() + "/"+ key);
+	        keyDir = Paths.get(config.mapOutputBufferDir.toString() + "/"+ key);
 	        if (!Files.exists(keyDir)){
 	        	keyDir.toFile().mkdir();
 	        }
-	        File outputFile = new File(keyDir.toFile(), pathSettings.getMapOutputFileName(key, this.workerId));
+	        File outputFile = new File(keyDir.toFile(), config.getMapOutputFileName(key, this.workerId));
 			FileWriter fr = new FileWriter(outputFile, true);
 			BufferedWriter br = new BufferedWriter(fr);
 			br.write(key);

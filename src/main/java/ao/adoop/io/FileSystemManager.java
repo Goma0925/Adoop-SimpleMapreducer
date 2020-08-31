@@ -10,26 +10,26 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-import ao.adoop.settings.SystemPathSettings;
+import ao.adoop.mapreduce.Configuration;
 
 public class FileSystemManager {
 	//This class creates, deletes, validates, and organize necessary files and directories for the program.
 	
-	private SystemPathSettings pathSettings = null;
+	private Configuration config = null;
 
-	public FileSystemManager(SystemPathSettings pathSettings) {
-		this.pathSettings = pathSettings;
+	public FileSystemManager(Configuration config) {
+		this.config = config;
 	}
 
 	public void initFileSystem() throws IOException {		
 		Path[] dirPaths = {
-				this.pathSettings.systemBaseDir,
-				this.pathSettings.mapOutputBufferDir,
-				this.pathSettings.reduceOutputBufferDir,
-				this.pathSettings.inputDir,
-				this.pathSettings.jobConfigDir,
-				this.pathSettings.finalOutputDir,
-				this.pathSettings.namedReduceOutputBaseDir
+				this.config.systemBaseDir,
+				this.config.mapOutputBufferDir,
+				this.config.reduceOutputBufferDir,
+				this.config.inputDir,
+				this.config.jobConfigDir,
+				this.config.finalOutputDir,
+				this.config.namedReduceOutputBaseDir
 		};
 		System.out.println("Checking and setting up the required directories...");
 		for (Path dirPath: dirPaths) {
@@ -59,7 +59,7 @@ public class FileSystemManager {
 	
 	public void clearMapOutputBufferDir() throws NotDirectoryException {
 		//Delete all the files and directories in the map output base dir.
-		File mapOutputBufferDir = this.pathSettings.mapOutputBufferDir.toFile();
+		File mapOutputBufferDir = this.config.mapOutputBufferDir.toFile();
 		if (!mapOutputBufferDir.isDirectory()) {
 			throw new NotDirectoryException("MapOutputBufferDir '" + mapOutputBufferDir.toString() + "' is not a directory.");
 		};
@@ -72,7 +72,7 @@ public class FileSystemManager {
 	
 	public void clearReduceOutputBufferDir() throws NotDirectoryException {
 		//Delete all the files and directories in the map output base dir.
-		File reduceOutputBaseDir = this.pathSettings.reduceOutputBufferDir.toFile();
+		File reduceOutputBaseDir = this.config.reduceOutputBufferDir.toFile();
 		if (!reduceOutputBaseDir.isDirectory()) {
 			throw new NotDirectoryException("ReduceOutputBufferDir '" + reduceOutputBaseDir.toString() + "' is not a directory.");
 		};

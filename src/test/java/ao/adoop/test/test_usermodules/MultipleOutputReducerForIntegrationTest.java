@@ -5,15 +5,15 @@ import java.util.ArrayList;
 
 import javax.naming.InvalidNameException;
 
+import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.MultipleOutputs;
 import ao.adoop.mapreduce.Reducer;
-import ao.adoop.settings.SystemPathSettings;
 
 public class MultipleOutputReducerForIntegrationTest extends Reducer {
-	public MultipleOutputReducerForIntegrationTest(String workerId, SystemPathSettings systemPathSetting,
+	public MultipleOutputReducerForIntegrationTest(String workerId, Configuration config,
 			ArrayList<File> inputFiles, String[] addedNamedOutputs) {
-		super(workerId, systemPathSetting, inputFiles, addedNamedOutputs);
+		super(workerId, config, inputFiles, addedNamedOutputs);
 	}
 
 	MultipleOutputs multipleOutputs = null;

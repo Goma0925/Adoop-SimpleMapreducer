@@ -1,13 +1,12 @@
 package testsettings;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import ao.adoop.settings.SystemPathSettings;
+import ao.adoop.mapreduce.Configuration;
 
-public class TestPathSettings extends SystemPathSettings{
+public class TestConfiguration extends Configuration{
 
-	public TestPathSettings() {
+	public TestConfiguration() {
 		super();
 		//Change the super class's path settings.
 		this.systemBaseDir = Paths.get("./target/test-file-outputs");

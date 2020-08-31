@@ -13,19 +13,18 @@ import java.util.Map;
 import javax.naming.InvalidNameException;
 
 import ao.adoop.io.DataLoader;
-import ao.adoop.settings.SystemPathSettings;
 import javafx.util.Pair;
 
 public abstract class Reducer implements Runnable{
 	protected String workerId = null;
 	protected ArrayList<File> inputFiles = null;
-	protected SystemPathSettings systemPathSetting = null;
+	protected Configuration config = null;
 	protected String[] addedNamedOutputs = null;
 
-	public Reducer(String workerId, SystemPathSettings systemPathSetting, ArrayList<File> inputFiles, String[] addedNamedOutputs) {
+	public Reducer(String workerId, Configuration config, ArrayList<File> inputFiles, String[] addedNamedOutputs) {
 		this.workerId = workerId;
 		this.inputFiles = inputFiles;
-		this.systemPathSetting = systemPathSetting;
+		this.config = config;
 		this.addedNamedOutputs = addedNamedOutputs;
 	}
 	
@@ -91,9 +90,9 @@ public abstract class Reducer implements Runnable{
 	private void writeToFiles(Context resultContext) throws IOException {
 		//Write the results to multiple files. One key per one file.
 		System.out.println(this.workerId + ":Writing to file..");
-		SystemPathSettings pathSettings = this.systemPathSetting;
+		Configuration pathSettings = this.config;
 		Path reduceOutputBaseDir = pathSettings.reduceOutputBufferDir;
-		String reduceOutputFileExtension = this.systemPathSetting.reduceOutputFileExtension;
+		String reduceOutputFileExtension = this.config.reduceOutputFileExtension;
 		
 		//Write the default key & value mapping
 		Map<String, ArrayList<String>> keyValMapping = resultContext.getDefaultMapping(); 
@@ -102,7 +101,7 @@ public abstract class Reducer implements Runnable{
 		
 		//Write each namedOutput's key & value mappings
 		for (String namedOutput: this.addedNamedOutputs) {
-			Path baseBufferOutputDir = Paths.get(this.systemPathSetting.namedReduceOutputBaseDir.toString(), namedOutput);
+			Path baseBufferOutputDir = Paths.get(this.config.namedReduceOutputBaseDir.toString(), namedOutput);
 			String baseFinalOutputPath = resultContext.getBaseOutputPath(namedOutput);
 			keyValMapping = resultContext.getNamedMapping(namedOutput);
 			if (keyValMapping != null) {

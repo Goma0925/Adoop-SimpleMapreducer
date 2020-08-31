@@ -2,16 +2,16 @@ package ao.adoop.test.test_usermodules;
 
 import java.io.File;
 
+import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.Mapper;
-import ao.adoop.settings.SystemPathSettings;
 
 public class MapperForIntegrationTest2 extends Mapper {
 
 
-	public MapperForIntegrationTest2(String workerId, SystemPathSettings pathSettings, File inputFile,
+	public MapperForIntegrationTest2(String workerId, Configuration config, File inputFile,
 			int startIndex, int endIndex, String[] addedNamedOutputs) {
-		super(workerId, pathSettings, inputFile, startIndex, endIndex, addedNamedOutputs);
+		super(workerId, config, inputFile, startIndex, endIndex, addedNamedOutputs);
 	}
 
 	@Override

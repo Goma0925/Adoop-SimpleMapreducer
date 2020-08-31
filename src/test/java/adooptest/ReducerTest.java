@@ -11,15 +11,15 @@ import org.junit.jupiter.api.Test;
 
 import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
+import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.InvalidReducerException;
 import ao.adoop.mapreduce.Reducer;
-import ao.adoop.settings.SystemPathSettings;
 import ao.adoop.test.test_usermodules.UnitTestReducer;
-import testsettings.TestPathSettings;
+import testsettings.TestConfiguration;
 
 class ReducerTest {
-	SystemPathSettings pathSettings = new TestPathSettings();
-	FileSystemManager fileSystemManager = new FileSystemManager(this.pathSettings);
+	Configuration config = new TestConfiguration();
+	FileSystemManager fileSystemManager = new FileSystemManager(this.config);
 	
 	@Test
 	void test() throws InvalidReducerException, IOException {
@@ -31,7 +31,7 @@ class ReducerTest {
 		DataLoader loader = new DataLoader();
 		String reduceInputFileDirPath = "src/test/resources/reduce-input-files";
 		String reduceOutputAnswerFilePath = "src/test/resources/reduce-test-answer/reduce-unit-test-answer.csv";
-		String outputFilePathStr = this.pathSettings.finalOutputDir.toString() + "/output.csv";
+		String outputFilePathStr = this.config.finalOutputDir.toString() + "/output.csv";
 		
 		//Get the reduce input file paths
 		File[] reduceInputFilesInArray = new File(reduceInputFileDirPath).listFiles();
@@ -42,7 +42,7 @@ class ReducerTest {
 		};
 		
 		//Run reduce
-		Reducer reducer = new UnitTestReducer(reducerId, this.pathSettings, reduceInputFiles, new String[0]);
+		Reducer reducer = new UnitTestReducer(reducerId, this.config, reduceInputFiles, new String[0]);
 		reducer.run();
 		
 		//Merge all the reduce outputs to a single output file specified at outputFilePath.
