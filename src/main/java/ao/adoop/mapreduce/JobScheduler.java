@@ -18,7 +18,7 @@ public class JobScheduler {
 	private UserInterface userInterface = null;
 	private ArrayList<File> reducerInputDirs = new ArrayList<File>();
 	private Job job = null;
-	private Configuration config = new Configuration();
+	private Configuration config = null;
 	
 	public JobScheduler(Job job, boolean verboseOn) throws Exception {
 		this.job = job;
@@ -27,6 +27,7 @@ public class JobScheduler {
 		}else {
 			this.userInterface = new NonVerboseInterface();
 		};
+		this.config = job.config;
 	}
 
 	protected void start() throws Exception{
