@@ -12,7 +12,7 @@ public class Configuration {
 	public String mapOutputFileExtension = ".csv";
 	
 	public Path reduceOutputBufferDir = Paths.get(systemBaseDir.toString(), "reduce-output-buffer");
-	public Path namedReduceOutputBaseDir = Paths.get(systemBaseDir.toString(), "named-reduce-output-buffer");
+	public Path namedReduceOutputBufferDir = Paths.get(systemBaseDir.toString(), "named-reduce-output-buffer");
 	public String reduceOutputFileName = "output";
 	public String reduceOutputFileExtension = ".csv";
 		

@@ -22,6 +22,7 @@ public class UnitTestReducer extends Reducer {
 		for (int i=0; i<size; i++) {
 			current = inputLines.get(i);
 			if (current.contains("target-value")) {
+				//Increment count the number of "target-value-X" occurrence.
 				countMap.put(current, countMap.getOrDefault(current, 0)+1);
 			}
 		};

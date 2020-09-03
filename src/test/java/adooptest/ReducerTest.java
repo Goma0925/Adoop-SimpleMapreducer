@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +17,7 @@ import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.InvalidReducerException;
 import ao.adoop.mapreduce.Reducer;
 import ao.adoop.test.test_usermodules.UnitTestReducer;
+import ao.adoop.test.utils.SimpleFileLoader;
 import testsettings.TestConfiguration;
 
 class ReducerTest {
@@ -28,10 +31,9 @@ class ReducerTest {
 		
 		//Set up test
 		String reducerId = "Test-Reduce-process";
-		DataLoader loader = new DataLoader();
 		String reduceInputFileDirPath = "src/test/resources/reduce-input-files";
 		String reduceOutputAnswerFilePath = "src/test/resources/reduce-test-answer/reduce-unit-test-answer.csv";
-		String outputFilePathStr = this.config.finalOutputDir.toString() + "/output.csv";
+		String reduceOutputFilePath = Paths.get(this.config.finalOutputDir.toString(), "part-r-"+ reducerId + this.config.reduceOutputFileExtension).toString();
 		
 		//Get the reduce input file paths
 		File[] reduceInputFilesInArray = new File(reduceInputFileDirPath).listFiles();
@@ -49,13 +51,13 @@ class ReducerTest {
 //		this.fileSystemManager.mergeReduceOutputs(new File(outputFilePathStr));
 		
 		//Check the output
-		ArrayList<String> answerLines = loader.loadFile(new File(reduceOutputAnswerFilePath));
-		ArrayList<String> outputLines = loader.loadFile(new File(outputFilePathStr));
+		String[] answerLines = SimpleFileLoader.readFile(new File(reduceOutputAnswerFilePath));
+		String[] outputLines = SimpleFileLoader.readFile(new File(reduceOutputFilePath));
 		
 		//Assert if the numbers of lines in the answer and the output are the same
-		Assertions.assertEquals(answerLines.size(), outputLines.size());
+		Assertions.assertEquals(answerLines.length, outputLines.length);
 		//Assert if the answer and output are the same.
-		Assertions.assertArrayEquals(answerLines.toArray(), outputLines.toArray());
+		Assertions.assertArrayEquals(answerLines, outputLines);
 	};
 
 

@@ -20,6 +20,7 @@ public abstract class Reducer implements Runnable{
 	protected ArrayList<File> inputFiles = null;
 	protected Configuration config = null;
 	protected String[] addedNamedOutputs = null;
+	protected String assignedKey = null;
 
 	public Reducer(String workerId, Configuration config, ArrayList<File> inputFiles, String[] addedNamedOutputs) {
 		this.workerId = workerId;
@@ -70,6 +71,7 @@ public abstract class Reducer implements Runnable{
 			ArrayList<String> newInputLines = loader.loadFile(inputFiles.get(i));
 			if (key == "") {
 				key = newInputLines.get(0); //Get the first row that represents the key of the mapping outputs.
+				this.assignedKey = key;
 			};
 			newInputLines.remove(0);//Remove the first element of the lines because it is a key.
 			tempoInputLines.addAll(newInputLines);
@@ -89,39 +91,57 @@ public abstract class Reducer implements Runnable{
 	
 	private void writeToFiles(Context resultContext) throws IOException {
 		//Write the results to multiple files. One key per one file.
-		System.out.println(this.workerId + ":Writing to file..");
-		Configuration pathSettings = this.config;
-		Path reduceOutputBaseDir = pathSettings.reduceOutputBufferDir;
+		Path reduceOutputBaseDir = this.config.finalOutputDir;
 		String reduceOutputFileExtension = this.config.reduceOutputFileExtension;
+        Path outputFile = Paths.get(reduceOutputBaseDir.toString(), "part-r-" + this.workerId + reduceOutputFileExtension);
+		System.out.println(this.workerId + ":Writing to file:" +  outputFile.toString());
+        FileWriter fr = new FileWriter(outputFile.toFile(), true);
+		BufferedWriter br = new BufferedWriter(fr);
 		
 		//Write the default key & value mapping
 		Map<String, ArrayList<String>> keyValMapping = resultContext.getDefaultMapping(); 
-		this.writeEachMapping(reduceOutputBaseDir, keyValMapping, reduceOutputFileExtension);
-		this.writeFinalOutputBasePath(reduceOutputBaseDir, "", "");
-		
+		String stringBuffer = "";
+		ArrayList<String> valueList = null;
+		int valueListSize = null;
+		for (String key: keyValMapping.keySet()) {
+			valueListSize = valueList.size();
+			valueList = keyValMapping.get(key);
+			for (int i=0; i<valueListSize; i++) {
+				stringBuffer = key + "," + valueList.get(i);
+				if (i != (valueList.size()-1)) {
+					//If not the last element, add a line break
+					stringBuffer += "\n";
+				}
+				br.write(stringBuffer);
+			}			
+		}
+		br.close();
+		fr.close();
 		//Write each namedOutput's key & value mappings
-		for (String namedOutput: this.addedNamedOutputs) {
-			Path baseBufferOutputDir = Paths.get(this.config.namedReduceOutputBaseDir.toString(), namedOutput);
-			String baseFinalOutputPath = resultContext.getBaseOutputPath(namedOutput);
-			keyValMapping = resultContext.getNamedMapping(namedOutput);
-			if (keyValMapping != null) {
-				this.writeEachMapping(baseBufferOutputDir, keyValMapping, reduceOutputFileExtension);
-				this.writeFinalOutputBasePath(baseBufferOutputDir, namedOutput, baseFinalOutputPath);
-			}
-		};
+//		for (String namedOutput: this.addedNamedOutputs) {
+//			Path baseBufferOutputDir = Paths.get(this.config.namedReduceOutputBufferDir.toString(), namedOutput);
+//			String baseFinalOutputPath = resultContext.getBaseOutputPath(namedOutput);
+//			keyValMapping = resultContext.getNamedMapping(namedOutput);
+//			if (keyValMapping != null) {
+//				this.writeEachMapping(baseBufferOutputDir, keyValMapping, reduceOutputFileExtension);
+//				this.writeFinalOutputBasePath(baseBufferOutputDir, namedOutput, baseFinalOutputPath);
+//			}
+//		};
 		
 	};
+	
+	
 	
 	private void writeEachMapping(Path baseBufferOutputDir, Map<String, ArrayList<String>> keyValMapping, String reduceOutputFileExtension) throws IOException {
 		for (Map.Entry<String, ArrayList<String>> entry : keyValMapping.entrySet()) {
 	        String key = entry.getKey();
 	        ArrayList<String> valueList = entry.getValue();
-	        Path keyDir = Paths.get(baseBufferOutputDir.toString() + "/"+ key);
-	        if (!Files.exists(keyDir)){
-	        	keyDir.toFile().mkdirs();;
+	        if (!Files.exists(baseBufferOutputDir)){
+	        	baseBufferOutputDir.toFile().mkdirs();;
 	        }
-	        File outputFile = new File(baseBufferOutputDir.toString() + "/"+ key +"/[" + key + "]-" + this.workerId + reduceOutputFileExtension);
-			FileWriter fr = new FileWriter(outputFile, true);
+	        Path outputFile = Paths.get(baseBufferOutputDir.toString(), "part-r-" + this.workerId + reduceOutputFileExtension);
+			System.out.println(this.workerId + ":Writing to file..");
+	        FileWriter fr = new FileWriter(outputFile.toFile(), true);
 			BufferedWriter br = new BufferedWriter(fr);
 			String stringBuffer = "";
 			int valueListSize = valueList.size();
@@ -139,17 +159,16 @@ public abstract class Reducer implements Runnable{
 	};
 	
 	private void writeFinalOutputBasePath(Path baseBufferOutputDir, String namedOutput, String baseFinalOutputDir) throws IOException {
-		//This method creates a new file named "baseOutputDir.txt" in the specified directory and record a baseOutputDir
-		//for each namedOutput
-		System.out.println("baseBufferOutputDir:" + baseBufferOutputDir.toString());
-		System.out.println("namedOutput:" + namedOutput);
-		System.out.println("baseFinalOutputDir:" + baseFinalOutputDir + "\n");
-		File finalOutputBasePathFile = new File(baseBufferOutputDir.toString(), "baseOutputDir.txt");
-		FileWriter fr = new FileWriter(finalOutputBasePathFile, true);
-		BufferedWriter br = new BufferedWriter(fr);
-		br.write(baseFinalOutputDir);
-		br.close();
-		fr.close();
+		//This method creates a new file named "baseOutputDir.txt" in the specified directory
+		//and record a baseOutputDir for each namedOutput's buffer, where the final output will be.
+		if (!baseFinalOutputDir.equals("")) {
+			File finalOutputBasePathFile = Paths.get(baseBufferOutputDir.toString(), this.assignedKey, "baseOutputDir.txt").toFile();
+			FileWriter fr = new FileWriter(finalOutputBasePathFile, true);
+			BufferedWriter br = new BufferedWriter(fr);
+			br.write(baseFinalOutputDir);
+			br.close();
+			fr.close();	
+		}
 	}
 	
 

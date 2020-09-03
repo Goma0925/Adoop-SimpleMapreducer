@@ -8,7 +8,7 @@ public class FileInputFormat {
 		job.setInputPath(inputPath);
 	}
 
-	public static void setOutputPath(Job job, Path outputFilePath) {
-		job.setOutputPath(outputFilePath);
+	public static void setOutputPath(Job job, Path outputDir) {
+		job.setFinalOutputDir(outputDir);
 	}
 }

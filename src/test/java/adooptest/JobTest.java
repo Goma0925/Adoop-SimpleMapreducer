@@ -71,12 +71,12 @@ public class JobTest {
 	
 	@Test
 	void testSingleOutput() {
-		Path outputFilePath = Paths.get("some/output/dir/path");
+		Path outputDirPath = Paths.get("some/output/dir/path");
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test job name");
 		
-		FileInputFormat.setOutputPath(job, outputFilePath);
-		Assertions.assertEquals(outputFilePath, job.getOutputPath());
+		FileInputFormat.setOutputPath(job, outputDirPath);
+		Assertions.assertEquals(outputDirPath, job.getFinalOutputDir());
 	}
 	
 	@Test

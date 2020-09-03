@@ -5,6 +5,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -18,7 +19,7 @@ public class JobScheduler {
 	private UserInterface userInterface = null;
 	private ArrayList<File> reducerInputDirs = new ArrayList<File>();
 	private Job job = null;
-	private Configuration config = new Configuration();
+	private Configuration config = null;
 	
 	public JobScheduler(Job job, boolean verboseOn) throws Exception {
 		this.job = job;
@@ -27,6 +28,7 @@ public class JobScheduler {
 		}else {
 			this.userInterface = new NonVerboseInterface();
 		};
+		this.config = job.config;
 	}
 
 	protected void start() throws Exception{
@@ -49,8 +51,22 @@ public class JobScheduler {
 		
 		this.runReduce(this.job.getReducerClass());
 		
-		 this.config.reduceOutputBufferDir.toFile();
-		fileManager.mergeReduceOutputs(this.config.reduceOutputBufferDir.toFile(), this.job.getOutputPath().toFile());
+		//Create a single output file from multiple reduce output files in buffer.
+		Path finalOutputDir = this.job.getFinalOutputDir();
+		Path reduceOutputBufferDir = this.config.reduceOutputBufferDir;
+		fileManager.mergeReduceOutputs(reduceOutputBufferDir.toFile(), finalOutputDir.toFile());			
+
+		//Create named output file for each named output. 
+		Path namedReduceOutputBufferDir = this.config.namedReduceOutputBufferDir;
+		Path bufferForNamedOutput = null;
+		Path finalOutputFile = null;
+		ArrayList<String> namedOutputs = this.job.getNamedOutputs();
+		int size = namedOutputs.size();
+		for (int i=0; i<size; i++) {
+			bufferForNamedOutput = Paths.get(namedReduceOutputBufferDir.toString(), namedOutputs.get(i));
+			finalOutputFile = Paths.get(this.job.getFinalOutputDir().toString(), this.config.finalOutputFileName+this.config.finalOutputFileExtension);
+			fileManager.mergeReduceOutputs(bufferForNamedOutput.toFile(), finalOutputFile.toFile());			
+		}
 	};
 
 	public void runMap(Class<?> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {

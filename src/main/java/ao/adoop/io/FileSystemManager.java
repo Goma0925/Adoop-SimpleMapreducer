@@ -28,8 +28,7 @@ public class FileSystemManager {
 				this.config.reduceOutputBufferDir,
 				this.config.inputDir,
 				this.config.jobConfigDir,
-				this.config.finalOutputDir,
-				this.config.namedReduceOutputBaseDir
+				this.config.namedReduceOutputBufferDir
 		};
 		System.out.println("Checking and setting up the required directories...");
 		for (Path dirPath: dirPaths) {
@@ -97,6 +96,9 @@ public class FileSystemManager {
 			}
 		};
 		results.sort(Comparator.comparing(File::toString));
+		for (File f: results) {
+			System.out.println("FileSystem-reduceOutputFile:" + f.toString());
+		}
 		return results;
 	}
 	
@@ -120,6 +122,6 @@ public class FileSystemManager {
 		};
 		pWriter.flush();
 		pWriter.close();
-		System.out.println("Finished printing in:" + finalOutputFile.toString());
+		System.out.println("Finished merging output files to :" + finalOutputFile.toString());
 	}
 }

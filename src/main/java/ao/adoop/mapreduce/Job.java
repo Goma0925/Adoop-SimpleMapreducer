@@ -10,7 +10,7 @@ public class Job {
 	protected String jobName = null;
 	protected ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = new ArrayList<Pair<Path, Class<? extends Mapper>>>();
 	private Class<? extends Reducer> reducerClass;
-	private ArrayList<String> outputNamedOutputs = null;//Outputs in each name space is written to different files.
+	private ArrayList<String> namedOutputs = null;//Outputs in each name space is written to different files.
 	private Path finalOutputDir = null;
 	
 	public Job(Configuration config, String jobName) {
@@ -74,25 +74,21 @@ public class Job {
 	}
 
 	protected void addNamedOutput(String outputNamedOutput) {
-		if (this.outputNamedOutputs == null) {
-			this.outputNamedOutputs = new ArrayList<String>();
+		if (this.namedOutputs == null) {
+			this.namedOutputs = new ArrayList<String>();
 		};
-		this.outputNamedOutputs.add(outputNamedOutput);
+		this.namedOutputs.add(outputNamedOutput);
 	}
 	
 	public ArrayList<String> getNamedOutputs(){
-		return this.outputNamedOutputs;
+		return this.namedOutputs;
 	}
 
-	public void setOutputPath(Path finalOutputDir) {
-		if (!finalOutputDir.toFile().isDirectory()) {
-			this.finalOutputDir = finalOutputDir;
-		}else {
-			new NotDirectoryException("The output path must be a directory: " + finalOutputDir.toString());
-		}
+	public void setFinalOutputDir(Path finalOutputDir) {
+		this.finalOutputDir = finalOutputDir;
 	}
 
-	public Path getOutputPath() {
+	public Path getFinalOutputDir() {
 		return this.finalOutputDir;
 	};
 	
