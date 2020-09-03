@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.FileInputFormat;
+import ao.adoop.mapreduce.FileOutputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.mapreduce.MultipleInputs;
@@ -75,7 +76,7 @@ public class JobTest {
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test job name");
 		
-		FileInputFormat.setOutputPath(job, outputFilePath);
+		FileOutputFormat.setOutputPath(job, outputFilePath);
 		Assertions.assertEquals(outputFilePath, job.getOutputPath());
 	}
 	

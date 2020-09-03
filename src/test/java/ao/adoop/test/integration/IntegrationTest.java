@@ -60,7 +60,7 @@ class IntegrationTest {
 		
 		//Set an input file and an output file. 
 		FileInputFormat.addInputPath(job, inputFilePath);
-		FileOutputFormat.setOutputFilePath(job, outputFilePath);
+		FileOutputFormat.setOutputPath(job, outputFilePath);
 		
 		job.waitForCompletion(true);
 		Assertions.assertArrayEquals(SimpleFileLoader.readFile(outputFilePath.toFile()), 
@@ -90,7 +90,7 @@ class IntegrationTest {
 		job.setReducerClass(ReducerForIntegrationTest.class);
 
 		//Set an output file. 
-		FileOutputFormat.setOutputFilePath(job, outputFilePath);
+		FileOutputFormat.setOutputPath(job, outputFilePath);
 
 		job.waitForCompletion(true);
 		Assertions.assertArrayEquals(SimpleFileLoader.readFile(outputFilePath.toFile()),
@@ -123,7 +123,7 @@ class IntegrationTest {
 		job.setReducerClass(MultipleOutputReducerForIntegrationTest.class);
 		
 		//Set an output file. 
-		FileOutputFormat.setOutputFilePath(job, outputDirPath);
+		FileOutputFormat.setOutputPath(job, outputDirPath);
 				
 		//Set named outputs. 
 		MultipleOutputs.addNamedOutput(job,"GROUP-1");
