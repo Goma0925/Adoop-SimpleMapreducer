@@ -1,5 +1,6 @@
 package ao.adoop.test.integration;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
@@ -48,8 +49,8 @@ class IntegrationTest {
 		//	1 reducer class.
 		//  1 output files.
 		Path inputFilePath = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
-		Path outputFilePath = Paths.get(this.config.mapOutputBufferDir.toString() + "/output.csv");
-		Path answerFilePath = Paths.get("src/test/resources/integration-test-answers/single-mapper-single-reducer.csv");
+		Path outputDir = Paths.get(this.config.mapOutputBufferDir.toString() + "/output.csv");
+		Path answerFileDir = Paths.get("src/test/resources/integration-test-answers/single-mapper-single-reducer.csv");
 		
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test Job");
@@ -60,11 +61,18 @@ class IntegrationTest {
 		
 		//Set an input file and an output file. 
 		FileInputFormat.addInputPath(job, inputFilePath);
-		FileOutputFormat.setOutputPath(job, outputFilePath);
+		FileOutputFormat.setOutputPath(job, outputDir);
 		
 		job.waitForCompletion(true);
-		Assertions.assertArrayEquals(SimpleFileLoader.readFile(outputFilePath.toFile()), 
-				SimpleFileLoader.readFile(answerFilePath.toFile()));
+		
+		//Check answers
+		File[] answerFiles = SimpleFileLoader.getChildFiles(answerFileDir);
+		File[] resultFiles = SimpleFileLoader.getChildFiles(outputDir);
+		for (int i=1; i<resultFiles.length; i++) {
+			Assertions.assertArrayEquals(
+					SimpleFileLoader.readFile(answerFiles[i]), 
+					SimpleFileLoader.readFile(resultFiles[i]));			
+		}
 	};
 	
 //	@Test
@@ -76,8 +84,8 @@ class IntegrationTest {
 		//  1 output files.
 		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputFilePath = Paths.get(this.config.mapOutputBufferDir.toString() + "/output.csv");
-		Path answerFilePath = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer.csv");
+		Path outputDir = this.config.mapOutputBufferDir;
+		Path answerFileDir = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer");
 		
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test Job");
@@ -90,11 +98,16 @@ class IntegrationTest {
 		job.setReducerClass(ReducerForIntegrationTest.class);
 
 		//Set an output file. 
-		FileOutputFormat.setOutputPath(job, outputFilePath);
+		FileOutputFormat.setOutputPath(job, outputDir);
 
-		job.waitForCompletion(true);
-		Assertions.assertArrayEquals(SimpleFileLoader.readFile(outputFilePath.toFile()),
-				SimpleFileLoader.readFile(answerFilePath.toFile()));
+		//Check answers
+		File[] answerFiles = SimpleFileLoader.getChildFiles(answerFileDir);
+		File[] resultFiles = SimpleFileLoader.getChildFiles(outputDir);
+		for (int i=1; i<resultFiles.length; i++) {
+			Assertions.assertArrayEquals(
+					SimpleFileLoader.readFile(answerFiles[i]), 
+					SimpleFileLoader.readFile(resultFiles[i]));			
+		}
 	};
 	
 	@Test
@@ -104,35 +117,49 @@ class IntegrationTest {
 		//	2 mapper classes for each input file
 		//	1 reducer class.
 		//  2 output files.
-		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
-		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputDirPath = Paths.get(this.config.mapOutputBufferDir.toString());
-		Path outputFilePath1 = Paths.get(outputDirPath.toString() + "/group1/output1.csv");
-		Path outputFilePath2 = Paths.get(outputDirPath.toString() + "/group2/output2.csv");
-		Path answerFilePath1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs1.csv");
-		Path answerFilePath2 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs2.csv");
+		Path inputFile1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
+		Path inputFile2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
+		Path outputDir = Paths.get(this.config.mapOutputBufferDir.toString());
+		Path outputDir1 = Paths.get(outputDir.toString() + "/group1/");
+		Path outputDir2 = Paths.get(outputDir.toString() + "/group2/");
+		Path answerFileDir1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs1");
+		Path answerFileDir2 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs2");
 		
 		Configuration config = new Configuration();
 		Job job = Job.getInstance(config, "Test Job");
 		
 		//Set two mapper classes and two input files
-		MultipleInputs.addInputPath(job, inputFilePath1, MapperForIntegrationTest1.class);
-		MultipleInputs.addInputPath(job, inputFilePath2, MapperForIntegrationTest2.class);
+		MultipleInputs.addInputPath(job, inputFile1, MapperForIntegrationTest1.class);
+		MultipleInputs.addInputPath(job, inputFile2, MapperForIntegrationTest2.class);
 		
 		//Set a reducer class
 		job.setReducerClass(MultipleOutputReducerForIntegrationTest.class);
 		
 		//Set an output file. 
-		FileOutputFormat.setOutputPath(job, outputDirPath);
+		FileOutputFormat.setOutputPath(job, outputDir);
 				
 		//Set named outputs. 
 		MultipleOutputs.addNamedOutput(job,"GROUP-1");
 		MultipleOutputs.addNamedOutput(job,"GROUP-2");
 
 		job.waitForCompletion(true);
-		Assertions.assertEquals(SimpleFileLoader.readFile(outputFilePath1.toFile()),
-				SimpleFileLoader.readFile(answerFilePath1.toFile()));
-		Assertions.assertEquals(SimpleFileLoader.readFile(outputFilePath2.toFile()),
-				answerFilePath2.toFile());
+		
+		//Check answers 1
+		File[] answerFiles = SimpleFileLoader.getChildFiles(answerFileDir1);
+		File[] resultFiles = SimpleFileLoader.getChildFiles(outputDir);
+		for (int i=1; i<resultFiles.length; i++) {
+			Assertions.assertArrayEquals(
+					SimpleFileLoader.readFile(answerFiles[i]), 
+					SimpleFileLoader.readFile(resultFiles[i]));			
+		};
+		
+		//Check answers 2
+		File[] answerFiles2 = SimpleFileLoader.getChildFiles(answerFileDir1);
+		File[] resultFiles2 = SimpleFileLoader.getChildFiles(outputDir2);
+		for (int i=1; i<resultFiles2.length; i++) {
+			Assertions.assertArrayEquals(
+					SimpleFileLoader.readFile(answerFiles2[i]), 
+					SimpleFileLoader.readFile(resultFiles2[i]));			
+		}
 	};
 }

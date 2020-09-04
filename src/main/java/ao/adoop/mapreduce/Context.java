@@ -74,4 +74,9 @@ public class Context {
 			this.keyValMappingByNamedOutputs.put(namedOutput, new HashMap<String, ArrayList<String>>());
 		}
 	}
+
+	public Map<String, Map<Object, ArrayList<Object>>> getKeyValMappingByBaseOutputPath() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

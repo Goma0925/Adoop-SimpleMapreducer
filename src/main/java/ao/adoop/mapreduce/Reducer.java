@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.naming.InvalidNameException;
 
@@ -90,43 +91,39 @@ public abstract class Reducer implements Runnable{
 	private void writeToFiles(Context resultContext) throws IOException {
 		//Write the results to multiple files. One key per one file.
 		System.out.println(this.workerId + ":Writing to file..");
-		Configuration pathSettings = this.config;
-		Path reduceOutputBaseDir = pathSettings.reduceOutputBufferDir;
-		String reduceOutputFileExtension = this.config.reduceOutputFileExtension;
+		Path reduceOutputBaseDir = this.config.finalOutputDir;
 		
 		//Write the default key & value mapping
-		Map<String, ArrayList<String>> keyValMapping = resultContext.getDefaultMapping(); 
-		this.writeEachMapping(reduceOutputBaseDir, keyValMapping, reduceOutputFileExtension);
-		this.writeFinalOutputBasePath(reduceOutputBaseDir, "", "");
+		Map<String, Map<Object, ArrayList<Object>>> keyValMappingByBaseOutputPath = resultContext.getKeyValMappingByBaseOutputPath(); 
 		
-		//Write each namedOutput's key & value mappings
-		for (String namedOutput: this.addedNamedOutputs) {
-			Path baseBufferOutputDir = Paths.get(this.config.namedReduceOutputBaseDir.toString(), namedOutput);
-			String baseFinalOutputPath = resultContext.getBaseOutputPath(namedOutput);
-			keyValMapping = resultContext.getNamedMapping(namedOutput);
+		//Write key & value to each each baseOutputPath's 
+		Path targetOutputDir = null;
+		Map<Object, ArrayList<Object>> keyValMapping = null;
+		for (String baseOutputPath: keyValMappingByBaseOutputPath.keySet()) {
+			targetOutputDir =  Paths.get(reduceOutputBaseDir.toString(), baseOutputPath);
+			keyValMapping = keyValMappingByBaseOutputPath.get(baseOutputPath);
 			if (keyValMapping != null) {
-				this.writeEachMapping(baseBufferOutputDir, keyValMapping, reduceOutputFileExtension);
-				this.writeFinalOutputBasePath(baseBufferOutputDir, namedOutput, baseFinalOutputPath);
+				this.writeEachMapping(targetOutputDir, keyValMapping);
 			}
 		};
 		
 	};
 	
-	private void writeEachMapping(Path baseBufferOutputDir, Map<String, ArrayList<String>> keyValMapping, String reduceOutputFileExtension) throws IOException {
-		for (Map.Entry<String, ArrayList<String>> entry : keyValMapping.entrySet()) {
-	        String key = entry.getKey();
-	        ArrayList<String> valueList = entry.getValue();
+	private void writeEachMapping(Path baseBufferOutputDir, Map<Object, ArrayList<Object>> keyValMapping) throws IOException {
+		for (Entry<Object, ArrayList<Object>> entry : keyValMapping.entrySet()) {
+	        Object key = entry.getKey();
+	        ArrayList<Object> valueList = entry.getValue();
 	        Path keyDir = Paths.get(baseBufferOutputDir.toString() + "/"+ key);
 	        if (!Files.exists(keyDir)){
 	        	keyDir.toFile().mkdirs();;
 	        }
-	        File outputFile = new File(baseBufferOutputDir.toString() + "/"+ key +"/[" + key + "]-" + this.workerId + reduceOutputFileExtension);
+	        File outputFile = new File(baseBufferOutputDir.toString(),this.config.generateReduceOutputFileName(this.workerId));
 			FileWriter fr = new FileWriter(outputFile, true);
 			BufferedWriter br = new BufferedWriter(fr);
 			String stringBuffer = "";
 			int valueListSize = valueList.size();
 			for (int i=0; i<valueListSize; i++) {
-				stringBuffer = key + "," + valueList.get(i);
+				stringBuffer = key.toString() + "," + valueList.get(i).toString();
 				if (i != (valueList.size()-1)) {
 					//If not the last element, add a line break
 					stringBuffer += "\n";

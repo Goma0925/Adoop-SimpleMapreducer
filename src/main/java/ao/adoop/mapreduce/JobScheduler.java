@@ -50,8 +50,6 @@ public class JobScheduler {
 		
 		this.runReduce(this.job.getReducerClass());
 		
-		 this.config.reduceOutputBufferDir.toFile();
-		fileManager.mergeReduceOutputs(this.config.reduceOutputBufferDir.toFile(), this.job.getOutputPath().toFile());
 	};
 
 	public void runMap(Class<?> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {
