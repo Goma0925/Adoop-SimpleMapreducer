@@ -47,19 +47,14 @@ public abstract class Reducer implements Runnable{
 		Context resultContext = null;
 		try {
 			resultContext = this.runReduce(keyAndValueList);
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
 		} catch (InvalidNameException e) {
 			e.printStackTrace();
 		}
 		try {
 			this.writeToFiles(resultContext);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		System.out.println(this.workerId + ":Loaded files for the key:"+keyAndValueList.getKey());
 	};
 
 	public Pair<String, ArrayList<String>> runShuffle(ArrayList<File> inputFiles) throws IOException {
@@ -74,11 +69,11 @@ public abstract class Reducer implements Runnable{
 			};
 			newInputLines.remove(0);//Remove the first element of the lines because it is a key.
 			tempoInputLines.addAll(newInputLines);
-		}
+		};
 		return new Pair<String, ArrayList<String>>(key, tempoInputLines);
 	};
 	
-	public Context runReduce(Pair<String, ArrayList<String>> keyAndValueList) throws InstantiationException, IllegalAccessException, InvalidNameException {
+	public Context runReduce(Pair<String, ArrayList<String>> keyAndValueList) throws InvalidNameException  {
 		Context resultContext = new Context();
 		resultContext.setNamedOutputs(this.addedNamedOutputs);
 		//Run the setup method
@@ -94,7 +89,7 @@ public abstract class Reducer implements Runnable{
 		Path reduceOutputBaseDir = this.config.finalOutputDir;
 		
 		//Write the default key & value mapping
-		Map<String, Map<Object, ArrayList<Object>>> keyValMappingByBaseOutputPath = resultContext.getKeyValMappingByBaseOutputPath(); 
+		Map<String, Map<Object, ArrayList<Object>>> keyValMappingByBaseOutputPath = resultContext.getKeyValMappingsByBaseOutputPath(); 
 		
 		//Write key & value to each each baseOutputPath's 
 		Path targetOutputDir = null;
@@ -104,35 +99,50 @@ public abstract class Reducer implements Runnable{
 			keyValMapping = keyValMappingByBaseOutputPath.get(baseOutputPath);
 			if (keyValMapping != null) {
 				this.writeEachMapping(targetOutputDir, keyValMapping);
-			}
+			};
 		};
 		
 	};
 	
 	private void writeEachMapping(Path baseBufferOutputDir, Map<Object, ArrayList<Object>> keyValMapping) throws IOException {
-		for (Entry<Object, ArrayList<Object>> entry : keyValMapping.entrySet()) {
-	        Object key = entry.getKey();
-	        ArrayList<Object> valueList = entry.getValue();
-	        Path keyDir = Paths.get(baseBufferOutputDir.toString() + "/"+ key);
-	        if (!Files.exists(keyDir)){
-	        	keyDir.toFile().mkdirs();;
-	        }
+		//Write only when the mapping is not empty
+		if (!keyValMapping.isEmpty()) {
+			//Create the output directory if it doesn't exits.
+			if (!baseBufferOutputDir.toFile().exists()) {
+				baseBufferOutputDir.toFile().mkdirs();
+			}
+			int keyCount = 0;
+			int keyNum = keyValMapping.keySet().size();
 	        File outputFile = new File(baseBufferOutputDir.toString(),this.config.generateReduceOutputFileName(this.workerId));
 			FileWriter fr = new FileWriter(outputFile, true);
-			BufferedWriter br = new BufferedWriter(fr);
 			String stringBuffer = "";
-			int valueListSize = valueList.size();
-			for (int i=0; i<valueListSize; i++) {
-				stringBuffer = key.toString() + "," + valueList.get(i).toString();
-				if (i != (valueList.size()-1)) {
-					//If not the last element, add a line break
-					stringBuffer += "\n";
+			BufferedWriter br = new BufferedWriter(fr);
+			
+			int counter = 0;
+			for (Entry<Object, ArrayList<Object>> entry : keyValMapping.entrySet()) {
+		        Object key = entry.getKey();
+		        ArrayList<Object> valueList = entry.getValue();
+				int valueListSize = valueList.size();
+				
+				//Add all the key & value pairs in the string buffer
+				for (int i=0; i<valueListSize; i++) {
+					stringBuffer += key.toString() + "," + valueList.get(i).toString();
+					if (i != (valueListSize-1)) {
+						//If the value is not the last element of the key, add a line break.
+						stringBuffer += "\n";	
+					};
 				}
+				keyCount += 1;
+				if (keyCount != keyNum) {
+					//If it is not the last key, add a line break to continue other sets of key & value pairs.
+					stringBuffer += "\n";
+				};
 				br.write(stringBuffer);
-			}
+				stringBuffer = "";
+		    }
 			br.close();
 			fr.close();
-	    }
+		}
 	};
 	
 	private void writeFinalOutputBasePath(Path baseBufferOutputDir, String namedOutput, String baseFinalOutputDir) throws IOException {

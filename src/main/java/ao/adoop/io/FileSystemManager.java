@@ -25,11 +25,9 @@ public class FileSystemManager {
 		Path[] dirPaths = {
 				this.config.systemBaseDir,
 				this.config.mapOutputBufferDir,
-				this.config.reduceOutputBufferDir,
 				this.config.inputDir,
 				this.config.jobConfigDir,
 				this.config.finalOutputDir,
-				this.config.namedReduceOutputBaseDir
 		};
 		System.out.println("Checking and setting up the required directories...");
 		for (Path dirPath: dirPaths) {
@@ -70,9 +68,9 @@ public class FileSystemManager {
         };
 	};
 	
-	public void clearReduceOutputBufferDir() throws NotDirectoryException {
+	public void clearFinalOutputDir() throws NotDirectoryException {
 		//Delete all the files and directories in the map output base dir.
-		File reduceOutputBaseDir = this.config.reduceOutputBufferDir.toFile();
+		File reduceOutputBaseDir = this.config.finalOutputDir.toFile();
 		if (!reduceOutputBaseDir.isDirectory()) {
 			throw new NotDirectoryException("ReduceOutputBufferDir '" + reduceOutputBaseDir.toString() + "' is not a directory.");
 		};

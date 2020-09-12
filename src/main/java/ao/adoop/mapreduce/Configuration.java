@@ -20,11 +20,12 @@ public class Configuration {
 	public String finalOutputFileName = "output";
 	public String finalOutputFileExtension = ".csv";
 	
-	public String getMapOutputFileName(String key, String workerId) {
-		return "[" + key + "]-" + workerId + this.mapOutputFileExtension.toString();
+	public String getMapOutputFileName(String workerId) {
+		return "part-m-" + workerId + this.mapOutputFileExtension.toString();
 	}
 
 	public String generateReduceOutputFileName(String workerId) {
-		return "part-r" + workerId + this.finalOutputFileExtension;
+		return "part-r-" + workerId + this.finalOutputFileExtension;
 	}
+
 }

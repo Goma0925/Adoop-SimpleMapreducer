@@ -23,6 +23,7 @@ import ao.adoop.test.test_usermodules.MapperForIntegrationTest1;
 import ao.adoop.test.test_usermodules.MapperForIntegrationTest2;
 import ao.adoop.test.test_usermodules.MultipleOutputReducerForIntegrationTest;
 import ao.adoop.test.test_usermodules.ReducerForIntegrationTest;
+import ao.adoop.test.utils.CustomAssertions;
 import ao.adoop.test.utils.SimpleFileLoader;
 import testsettings.TestConfiguration;
 
@@ -38,7 +39,7 @@ class IntegrationTest {
 	void cleanBuffers() throws IOException {
 		this.fManager.initFileSystem();
 		this.fManager.clearMapOutputBufferDir();
-		this.fManager.clearReduceOutputBufferDir();
+		this.fManager.clearFinalOutputDir();
 	}
 	
 //	@Test
@@ -49,10 +50,10 @@ class IntegrationTest {
 		//	1 reducer class.
 		//  1 output files.
 		Path inputFilePath = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
-		Path outputDir = Paths.get(this.config.mapOutputBufferDir.toString() + "/output.csv");
-		Path answerFileDir = Paths.get("src/test/resources/integration-test-answers/single-mapper-single-reducer.csv");
+		Path outputDir = this.config.mapOutputBufferDir;
+		Path answerFileDir = Paths.get("src/test/resources/integration-test-answers/single-mapper-single-reducer");
 		
-		Configuration config = new Configuration();
+		Configuration config = new TestConfiguration();
 		Job job = Job.getInstance(config, "Test Job");
 		
 		//Set a mapper and a reducer class for the job.
@@ -66,13 +67,8 @@ class IntegrationTest {
 		job.waitForCompletion(true);
 		
 		//Check answers
-		File[] answerFiles = SimpleFileLoader.getChildFiles(answerFileDir);
-		File[] resultFiles = SimpleFileLoader.getChildFiles(outputDir);
-		for (int i=1; i<resultFiles.length; i++) {
-			Assertions.assertArrayEquals(
-					SimpleFileLoader.readFile(answerFiles[i]), 
-					SimpleFileLoader.readFile(resultFiles[i]));			
-		}
+		CustomAssertions.assertEachFileContent(answerFileDir,outputDir);
+
 	};
 	
 //	@Test
@@ -84,10 +80,10 @@ class IntegrationTest {
 		//  1 output files.
 		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputDir = this.config.mapOutputBufferDir;
+		Path outputDir = this.config.finalOutputDir;
 		Path answerFileDir = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer");
 		
-		Configuration config = new Configuration();
+		Configuration config = new TestConfiguration();
 		Job job = Job.getInstance(config, "Test Job");
 		
 		//Set two mapper classes and two input files
@@ -100,14 +96,11 @@ class IntegrationTest {
 		//Set an output file. 
 		FileOutputFormat.setOutputPath(job, outputDir);
 
+		job.waitForCompletion(true);
+		
 		//Check answers
-		File[] answerFiles = SimpleFileLoader.getChildFiles(answerFileDir);
-		File[] resultFiles = SimpleFileLoader.getChildFiles(outputDir);
-		for (int i=1; i<resultFiles.length; i++) {
-			Assertions.assertArrayEquals(
-					SimpleFileLoader.readFile(answerFiles[i]), 
-					SimpleFileLoader.readFile(resultFiles[i]));			
-		}
+		CustomAssertions.assertEachFileContent(answerFileDir,outputDir);
+
 	};
 	
 	@Test
@@ -119,13 +112,13 @@ class IntegrationTest {
 		//  2 output files.
 		Path inputFile1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFile2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputDir = Paths.get(this.config.mapOutputBufferDir.toString());
-		Path outputDir1 = Paths.get(outputDir.toString() + "/group1/");
-		Path outputDir2 = Paths.get(outputDir.toString() + "/group2/");
-		Path answerFileDir1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs1");
-		Path answerFileDir2 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-mutiple-outputs2");
+		Path outputDir = this.config.finalOutputDir;
+		Path outputDir1 = Paths.get(outputDir.toString() + "/GROUP1/"); //Output group1 dir
+		Path outputDir2 = Paths.get(outputDir.toString() + "/GROUP2/"); //Output group2 dir
+		Path answerFileDir1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-multiple-outputs1");
+		Path answerFileDir2 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-multiple-outputs2");
 		
-		Configuration config = new Configuration();
+		Configuration config = new TestConfiguration();
 		Job job = Job.getInstance(config, "Test Job");
 		
 		//Set two mapper classes and two input files
@@ -135,31 +128,15 @@ class IntegrationTest {
 		//Set a reducer class
 		job.setReducerClass(MultipleOutputReducerForIntegrationTest.class);
 		
-		//Set an output file. 
+		//Set an output path. 
 		FileOutputFormat.setOutputPath(job, outputDir);
 				
-		//Set named outputs. 
-		MultipleOutputs.addNamedOutput(job,"GROUP-1");
-		MultipleOutputs.addNamedOutput(job,"GROUP-2");
-
 		job.waitForCompletion(true);
 		
-		//Check answers 1
-		File[] answerFiles = SimpleFileLoader.getChildFiles(answerFileDir1);
-		File[] resultFiles = SimpleFileLoader.getChildFiles(outputDir);
-		for (int i=1; i<resultFiles.length; i++) {
-			Assertions.assertArrayEquals(
-					SimpleFileLoader.readFile(answerFiles[i]), 
-					SimpleFileLoader.readFile(resultFiles[i]));			
-		};
+		//Check answer output to group1
+		CustomAssertions.assertEachFileContent(answerFileDir1, outputDir1);
 		
-		//Check answers 2
-		File[] answerFiles2 = SimpleFileLoader.getChildFiles(answerFileDir1);
-		File[] resultFiles2 = SimpleFileLoader.getChildFiles(outputDir2);
-		for (int i=1; i<resultFiles2.length; i++) {
-			Assertions.assertArrayEquals(
-					SimpleFileLoader.readFile(answerFiles2[i]), 
-					SimpleFileLoader.readFile(resultFiles2[i]));			
-		}
+		//Check answer output to group2
+		CustomAssertions.assertEachFileContent(answerFileDir2, outputDir2);
 	};
 }

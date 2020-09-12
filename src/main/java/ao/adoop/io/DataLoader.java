@@ -129,8 +129,8 @@ public class DataLoader {
 		BufferedReader bReader = new BufferedReader(fReader);
         while ((line = bReader.readLine()) != null) {
             lines.add(line);
-         };
-         bReader.close();
+        };
+        bReader.close();
 		return lines;
 	};
 }

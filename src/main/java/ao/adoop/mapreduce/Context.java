@@ -13,70 +13,49 @@ public class Context {
 	//It allows them to write and (key:value) pair.
 	//Each writing is directed to a certain name space. A key and value to different name spaces are
 	//managed separately and the result mapping for the name space can be retrieved by getMapping method.
-	private Map<String, ArrayList<String>> defaultKeyValMapping = new HashMap<String, ArrayList<String>>(); 
-	private Map<String, Map<String, ArrayList<String>>> keyValMappingByNamedOutputs = null;
-	private Map<String, String> baseOutputPathMappingByNamedOutputs = null;
+	private Map<String, Map<Object, ArrayList<Object>>> keyValMappingByBaseOutputPath = null;
 
+	public Context() {
+		 //Create a map to store keyValMappings by baseOutputPath
+		 this.keyValMappingByBaseOutputPath = new HashMap<String, Map<Object, ArrayList<Object>>>();
+		 //Create a keyValMapping (Map<Key, Values>) for the default output.
+		 this.keyValMappingByBaseOutputPath.put("", new HashMap<Object, ArrayList<Object>>());
+	}
+	
 	public void write(String key, String value) {
-		this.addPairToMapping(this.defaultKeyValMapping, key, value);
+		this.addPairToMapping("", this.keyValMappingByBaseOutputPath.get(""), key, value);
 	};
 	
-	private void addPairToMapping(Map<String, ArrayList<String>> keyValMapping, String key, String value) {
+	private void addPairToMapping(String baseOutputPath, Map<Object, ArrayList<Object>> keyValMapping, Object key, Object value) {
 		if (!keyValMapping.containsKey(key)) {
-			ArrayList<String> list = new ArrayList<String>();
+			//Create a new value list of the list for the key does not exist.
+			ArrayList<Object> list = new ArrayList<Object>();
 			list.add(value);
 			keyValMapping.put(key, list);
+			this.keyValMappingByBaseOutputPath.put(baseOutputPath, keyValMapping);
 		}
 		else {
 			keyValMapping.get(key).add(value);
 		};
 	}
-	
-	public Map<String, ArrayList<String>> getDefaultMapping(){
-		return this.defaultKeyValMapping;
-	};
-	
-	public Map<String, ArrayList<String>> getNamedMapping(String namedOutput){
-		//Return the mapping associated with the defaultNamedOutput if no namedOutput is given. 
-		if (
-				this.keyValMappingByNamedOutputs == null) {return null;
-		}else{
-			return this.keyValMappingByNamedOutputs.get(namedOutput);
-		}
-	}
 
-	protected void writeToNamedOutput(String namedOutput, String key, String value, String baseOutputPath) throws InvalidNameException {
-		//If no namedOutput is set.
-		if (this.keyValMappingByNamedOutputs == null) {
-			throw new InvalidNameException("Named output '" + namedOutput + "' is not set.");
-		}
-		
-		Map<String, ArrayList<String>> keyValMapping = this.keyValMappingByNamedOutputs.get(namedOutput);;
-		if (keyValMapping == null) {
-			throw new InvalidNameException("Named output '" + namedOutput + "' is not set.");
+	protected void writeToBaseOutputPath(Object key, Object value, String baseOutputPath) {		
+		Map<Object, ArrayList<Object>> keyValMapping = this.keyValMappingByBaseOutputPath.get(baseOutputPath);
+		if (keyValMapping != null) {
+			this.addPairToMapping(baseOutputPath, keyValMapping, key, value);
 		}else {
-			this.addPairToMapping(keyValMapping, key, value);
+			//Create a new key & value mapping if one for this baseOutputPath does not exit.
+			keyValMapping = new HashMap<Object, ArrayList<Object>>();
+			this.keyValMappingByBaseOutputPath.put(baseOutputPath, keyValMapping);
+			this.addPairToMapping(baseOutputPath, keyValMapping, key, value);
 		}
-		this.baseOutputPathMappingByNamedOutputs.put(namedOutput, baseOutputPath);
 	};
-	
-	public String getBaseOutputPath(String namedOutput){
-		return this.baseOutputPathMappingByNamedOutputs.get(namedOutput);
-	}
 
 	public void setNamedOutputs(String[] addedNamedOutputs) {
-		//This method sets namedOutputs to which a client can record a key & value pair, separately 
-		//from the defaultKeyValMapping.
-		this.baseOutputPathMappingByNamedOutputs = new HashMap<String, String>();
-		this.keyValMappingByNamedOutputs = new HashMap<String, Map<String, ArrayList<String>>>();
-		for (String namedOutput: addedNamedOutputs) {
-			this.baseOutputPathMappingByNamedOutputs.put(namedOutput, "");
-			this.keyValMappingByNamedOutputs.put(namedOutput, new HashMap<String, ArrayList<String>>());
-		}
+
 	}
 
-	public Map<String, Map<Object, ArrayList<Object>>> getKeyValMappingByBaseOutputPath() {
-		// TODO Auto-generated method stub
-		return null;
+	public Map<String, Map<Object, ArrayList<Object>>> getKeyValMappingsByBaseOutputPath() {
+		return this.keyValMappingByBaseOutputPath;
 	}
 }

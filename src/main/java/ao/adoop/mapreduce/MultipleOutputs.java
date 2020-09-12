@@ -10,8 +10,8 @@ public class MultipleOutputs {
 	public MultipleOutputs(Context context) {
 		this.context = context;
 	}
-	public void write(String namedOutput, String key, String value, String baseOutputPath) throws InvalidNameException {
-		this.context.writeToNamedOutput(namedOutput, key, value, baseOutputPath);
+	public void write(String key, String value, String baseOutputPath) {
+		this.context.writeToBaseOutputPath(key, value, baseOutputPath);
 		
 	}
 	public static void addNamedOutput(Job job, String namedOutput) {

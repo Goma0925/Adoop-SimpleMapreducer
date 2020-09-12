@@ -2,6 +2,8 @@ package ao.adoop.test.test_usermodules;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.naming.InvalidNameException;
 
@@ -23,14 +25,28 @@ public class MultipleOutputReducerForIntegrationTest extends Reducer {
 
 	@Override
 	public void reduce(String key, ArrayList<String> values, Context context) throws InvalidNameException {
-		for (String value: values) {
-			if (key.equals("KEY=1") || key.equals("KEY=2")) {
-				this.multipleOutputs.write("GROUP-1", key, value, "/key-1-and-2/");
-			}else if (key.equals("KEY=3") || key.equals("KEY=4")) {
-				this.multipleOutputs.write("GROUP-2", key, value, "/key-3-and-4/");
+		System.out.println("key:"+key);
+		Map<String, Integer> counts = new HashMap<String, Integer>();
+		int length = values.size();
+		String error = "";
+		for (int i=0; i<length; i++) {
+			try {
+				counts.putIfAbsent(key, 0);
+				counts.put(key, counts.get(key) + Integer.parseInt(values.get(i)));				
+			}catch(Exception e){
+				error += values.get(i);
 			}
+		};
+		if (key.equals("KEY=1") || key.equals("KEY=2")) {
+			this.multipleOutputs.write(key, Integer.toString(counts.get(key))+"|"+this.workerId, "/GROUP1/");
+		}else {
+			this.multipleOutputs.write(key, Integer.toString(counts.get(key))+"|"+this.workerId, "/GROUP2/");
 		}
-
+		
+		if (!error.equals("")) {
+			this.multipleOutputs.write("ERROR", error, "/ERROR/");
+		}
+		
 	}
 
 }

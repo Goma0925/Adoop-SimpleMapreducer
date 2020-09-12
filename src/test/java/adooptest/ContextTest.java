@@ -33,12 +33,12 @@ class ContextTest {
 			context.write(key, testValueSet1[i]);
 		}
 		
-		//Get the map of a default name space that stores the written results.
-		Map<String, ArrayList<String>> keyValMapping = context.getDefaultMapping();
+		//Get the map of a default output path that stores the written results.
+		Map<Object, ArrayList<Object>> keyValMapping = context.getKeyValMappingsByBaseOutputPath().get("");
 		
 		//Check the results for key "0"
 		key = "0";
-		ArrayList<String> valueList = keyValMapping.get(key);
+		ArrayList<Object> valueList = keyValMapping.get(key);
 		ArrayList<String> answerValueList = getItemsAtEvenIndex(testValueSet1);
 		Assertions.assertArrayEquals(answerValueList.toArray(), valueList.toArray());
 		
@@ -50,61 +50,48 @@ class ContextTest {
 	};
 	
 	@Test
-	void testWriteToNamedOutput() throws InvalidNameException{
+	void testWriteToBaseOutputPath() throws InvalidNameException{
 		//To write output to different locations, use MutipleInputs wrapper with Context.
 		//This API is a mimic from the Hadoop API.
-		ArrayList<String> namedOutputs = new ArrayList<String>();
+		ArrayList<String> baseOutputPaths = new ArrayList<String>();
 		Context context = new Context();
 		
 		//Set namedOutputs to store key & val pairs.
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
-			String namedOutput = "Set" + Integer.toString(setNum);
-			namedOutputs.add(namedOutput);
+			String baseOutputPath = "/directory" + Integer.toString(setNum) + "/";
+			baseOutputPaths.add(baseOutputPath);
 		};
 		
-		context.setNamedOutputs(namedOutputs.toArray(new String[namedOutputs.size()]));
 		MultipleOutputs multipleOutputs = new MultipleOutputs(context);
-		
-		//Check if writing to an unregistered namedOutput fails.
-		Assertions.assertThrows(InvalidNameException.class, () -> {
-			multipleOutputs.write("Unregistered name", "key", "value", "test/path");				
-		});
 		
 		String key = "";
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
-			String namedOutput = namedOutputs.get(setNum);
-			String baseOutputPath = "/"+namedOutput;
+			String baseOutputPath = baseOutputPaths.get(setNum);
 			for (int i=0; i<valueSets[setNum].length; i++) {
 				//Put items at an odd number index with key "1", items at an even number index with key "0"
 				key = Integer.toString(i%2);
-				multipleOutputs.write(namedOutput, key, valueSets[setNum][i], baseOutputPath);				
+				multipleOutputs.write(key, valueSets[setNum][i], baseOutputPath);				
 			}
 		};
 		
-		//Check if the context contains all the values in the corresponding set for each name space.
+		//Check if the context contains even and odd values in the different baseOutputPaths.
 		for (int setNum=0; setNum<valueSets.length; setNum++) {
 			//Get the keyValMapping for each name space.
-			String namedOutput = "Set" + Integer.toString(setNum);
-			Map<String, ArrayList<String>> keyValMapping = context.getNamedMapping(namedOutput);
+			String baseOutputPath = baseOutputPaths.get(setNum);
+			Map<Object, ArrayList<Object>> keyValMapping = context.getKeyValMappingsByBaseOutputPath().get(baseOutputPath);
 			
-			//Check the results for key "0"
+			//Check if the results for key "0" (even index item) are in a particular baseOutputPath 
 			key = "0";
-			ArrayList<String> valueList = keyValMapping.get(key);
+			ArrayList<Object> valueList = keyValMapping.get(key);
 			ArrayList<String> answerValueList = getItemsAtEvenIndex(valueSets[setNum]);
 			Assertions.assertArrayEquals(answerValueList.toArray(), valueList.toArray());
 			
-			//Check the results for key "1"
+			//Check if the results for key "1" (odd index item) are in the other baseOutputPath
 			key = "1";
 			valueList = keyValMapping.get(key);
 			answerValueList = getItemsAtOddIndex(valueSets[setNum]);
 			Assertions.assertArrayEquals(answerValueList.toArray(), valueList.toArray());
 		};
-		
-		//Check if the context contains the correct baseOutputPath for each name space.
-		for (String namedOutput: namedOutputs) {
-			String baseOutputPath = context.getBaseOutputPath(namedOutput);
-			Assertions.assertEquals("/"+namedOutput, baseOutputPath);
-		}
 	}
 	
 	ArrayList<String> getItemsAtOddIndex(String[] array) {

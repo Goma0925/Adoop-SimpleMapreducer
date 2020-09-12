@@ -33,7 +33,6 @@ public class JobScheduler {
 	protected void start() throws Exception{
 		FileSystemManager fileManager = new FileSystemManager(this.config);
 		fileManager.clearMapOutputBufferDir();
-		fileManager.clearReduceOutputBufferDir();
 		
 		long threadMaxThreashhold = 30;
 		String threadMaxThreashholdUnit = "MB";
@@ -45,6 +44,8 @@ public class JobScheduler {
 		for (Pair<Path, Class<? extends Mapper>> mapTask: mapTasks) {
 			mapperClass = mapTask.getValue();
 			inputFile = mapTask.getKey().toFile();
+			System.out.println(" 	Mapper:" + mapperClass.toString());
+			System.out.println(" 	Input :" + inputFile.toString());
 			this.runMap(mapperClass, inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);
 		}
 		
@@ -52,7 +53,7 @@ public class JobScheduler {
 		
 	};
 
-	public void runMap(Class<?> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {
+	public void runMap(Class<? extends Mapper> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {
 		this.timer.startCpuTimer();
 		DataLoader loader = new DataLoader();
 		ArrayList<int[]> chunkIndices = loader.getChunkIndices(inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);        
@@ -62,11 +63,11 @@ public class JobScheduler {
         Mapper worker = null;
         Constructor<?> mapperConstructor = mapperClass.getDeclaredConstructor(new Class[] {String.class, Configuration.class, File.class, int.class, int.class, String[].class});
         mapperConstructor.setAccessible(true);
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of 2 threads  
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of X threads  
         
         this.userInterface.doMappingStart(numberOfThreads);
         for (int i = 0; i < chunkIndices.size(); i++) {
-        	String workerId = Integer.toString(i);
+        	String workerId = mapperClass.getSimpleName() + "-" + Integer.toString(i);
             String[] namedOutputs = this.job.getNamedOutputs().toArray(new String[job.getNamedOutputs().size()]);
         	//Each mapper worker(thread) will read from the input file, map, and write results to a file.
         	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.config, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1], namedOutputs});
@@ -89,9 +90,10 @@ public class JobScheduler {
 		ArrayList<File> targetDirs = new ArrayList<File>();
 		for (File ele: listOfElements) {
 			if (ele.isDirectory()) {
+				System.out.println(ele.toString());
 				targetDirs.add(ele);
 			}
-		}
+		};
 		return targetDirs;
 	};
 	
@@ -120,11 +122,10 @@ public class JobScheduler {
 				if (item.isFile()) {
 					inputFiles.add(item);
 				}
-			};
+			};			
         	String id = Integer.toString(i);
         	worker = (Reducer) reducerConstructor.newInstance(new Object[] {id, this.config, inputFiles, namedOutputs});
             executor.execute(worker);//Run the thread 
-        	worker.run();
             workers[i] = worker;
 		};
         executor.shutdown(); 

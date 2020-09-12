@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import ao.adoop.io.DataLoader;
 
@@ -17,7 +18,6 @@ public abstract class Mapper implements Runnable {
 	protected int startIndex = 0;
 	protected int endIndex = 0;
 	protected File inputFile = null;
-	protected Context resultContext = null; 
 	protected Configuration config = null;
 	protected String[] addedNamedOutputs = null;
 	
@@ -36,8 +36,9 @@ public abstract class Mapper implements Runnable {
 
 	public void run() {
 		//Run mapping
+		Context resultContext = null;
 		try {
-			this.runMap();
+			resultContext = this.runMap();
 		} catch (InstantiationException e1) {
 			e1.printStackTrace();
 		} catch (IllegalAccessException e1) {
@@ -47,13 +48,13 @@ public abstract class Mapper implements Runnable {
 		}
 		//Write results to file
 		try {
-			this.writeToFiles();
+			this.writeToFiles(resultContext);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	};
 	
-	public void runMap() throws InstantiationException, IllegalAccessException, IOException {		
+	public Context runMap() throws InstantiationException, IllegalAccessException, IOException {		
 		System.out.println(this.workerId + ":Running process...");
 		Context tempoContext = new Context();
 		DataLoader loader = new DataLoader();
@@ -71,34 +72,55 @@ public abstract class Mapper implements Runnable {
 			this.map(Integer.toString(chunkStartIndex), inputLines[i], tempoContext);
 		}
 		System.out.println(this.workerId + ":Done processing:" + Integer.toString(inputLines.length));
-		this.resultContext  = tempoContext;
+		return tempoContext;
 	};
 	
-	private void writeToFiles() throws IOException {
+	private void writeToFiles(Context resultContext) throws IOException {
 		//Write the results to files. Each key's associated values will be written in different files.
-		System.out.println(this.workerId + ":Writing to file.. :" + this.config.mapOutputBufferDir.toString());
+		
+		//Get the key & value mappings organized by the baseOutputPath string.
+		Map<String, Map<Object, ArrayList<Object>>> keyValMappingByBaseOutputPath = resultContext.getKeyValMappingsByBaseOutputPath(); 
+		//Write key & value to each baseOutputPath's 
+		Path targetOutputDir = null;
+		Map<Object, ArrayList<Object>> keyValMapping = null;
+		Path finalOutputBaseDir = this.config.finalOutputDir;
+		for (String baseOutputPath: keyValMappingByBaseOutputPath.keySet()) {
+			if (baseOutputPath.equals("")) {
+				//Regular output goes into the mapper output buffer directory.
+				targetOutputDir =  this.config.mapOutputBufferDir;
+			}else {
+				//Multiple output to a particular outputPath which was 
+				//specified by user goes into the final output directory. 
+				targetOutputDir = Paths.get(finalOutputBaseDir.toString(), baseOutputPath);
+			}
+			keyValMapping = keyValMappingByBaseOutputPath.get(baseOutputPath);
+			this.writeEachMapping(targetOutputDir, keyValMapping);
+		};
+	};
+	
+	private void writeEachMapping(Path baseBufferOutputDir, Map<Object, ArrayList<Object>> keyValMapping) throws IOException {
 		String key;
 		Path keyDir;
-		ArrayList<String> valueList;
-		Configuration config = this.config;
-		for (Map.Entry<String, ArrayList<String>> entry : this.resultContext.getDefaultMapping().entrySet()) {
-	        key = entry.getKey();
+		ArrayList<Object> valueList;
+		for (Entry<Object, ArrayList<Object>> entry : keyValMapping.entrySet()) {
+	        key = entry.getKey().toString();
 	        valueList = entry.getValue();
-	        keyDir = Paths.get(config.mapOutputBufferDir.toString() + "/"+ key);
+	        keyDir = Paths.get(config.mapOutputBufferDir.toString(), key);
 	        if (!Files.exists(keyDir)){
 	        	keyDir.toFile().mkdir();
 	        }
-	        File outputFile = new File(keyDir.toFile(), config.getMapOutputFileName(key, this.workerId));
-			FileWriter fr = new FileWriter(outputFile, true);
+	        File outputFile = new File(keyDir.toFile(), config.getMapOutputFileName(this.workerId));
+			System.out.println(this.workerId + ":Writing to file.. :" + outputFile.toString());
+	        FileWriter fr = new FileWriter(outputFile, true);
 			BufferedWriter br = new BufferedWriter(fr);
 			br.write(key);
-			for (String value: valueList) {
-				br.write("\n"+value);;
+			for (Object value: valueList) {
+				br.write("\n"+value.toString());;
 			}
 			br.close();
 			fr.close();
 	    };
-	    
+
 	}
 
 	public abstract void map(String key, String value, Context context);
