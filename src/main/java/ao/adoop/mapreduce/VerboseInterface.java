@@ -22,4 +22,9 @@ public class VerboseInterface implements  UserInterface{
 	public void doReducingEnd() {
         System.out.println("-------Reducing finished------");
 	}
+
+	@Override
+	public void doOnExit() {
+        System.out.println("------------------------------");
+	}
 }

@@ -18,7 +18,7 @@ public class NonVerboseInterface implements  UserInterface{
 	public void doReducingEnd() {
 	}
 
-	public Pair<String, String[]> acceptCommand() {
-		return null;
+	@Override
+	public void doOnExit() {		
 	};
 }

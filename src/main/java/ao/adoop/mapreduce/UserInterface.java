@@ -6,4 +6,5 @@ public interface UserInterface {
 	void doMappingEnd();
 	void doReducingStart(int numberOfThreads);
 	void doReducingEnd();
+	void doOnExit();
 }

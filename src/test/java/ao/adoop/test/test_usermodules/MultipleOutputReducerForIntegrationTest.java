@@ -25,7 +25,6 @@ public class MultipleOutputReducerForIntegrationTest extends Reducer {
 
 	@Override
 	public void reduce(String key, ArrayList<String> values, Context context) throws InvalidNameException {
-		System.out.println("key:"+key);
 		Map<String, Integer> counts = new HashMap<String, Integer>();
 		int length = values.size();
 		String error = "";
@@ -42,7 +41,6 @@ public class MultipleOutputReducerForIntegrationTest extends Reducer {
 		}else {
 			this.multipleOutputs.write(key, Integer.toString(counts.get(key)), "/GROUP2/");
 		}
-		
 		if (!error.equals("")) {
 			this.multipleOutputs.write("ERROR", error, "/ERROR/");
 		}
