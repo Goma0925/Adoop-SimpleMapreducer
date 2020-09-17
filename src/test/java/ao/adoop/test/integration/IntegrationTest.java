@@ -19,13 +19,13 @@ import ao.adoop.mapreduce.FileOutputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.MultipleInputs;
 import ao.adoop.mapreduce.MultipleOutputs;
-import ao.adoop.test.test_usermodules.MapperForIntegrationTest1;
-import ao.adoop.test.test_usermodules.MapperForIntegrationTest2;
-import ao.adoop.test.test_usermodules.MultipleOutputReducerForIntegrationTest;
-import ao.adoop.test.test_usermodules.ReducerForIntegrationTest;
 import ao.adoop.test.utils.CustomAssertions;
 import ao.adoop.test.utils.SimpleFileLoader;
-import testsettings.TestConfiguration;
+import ao.adoop.test.utils.configurations.TestConfiguration;
+import ao.adoop.test.utils.usermodules.MapperForIntegrationTest1;
+import ao.adoop.test.utils.usermodules.MapperForIntegrationTest2;
+import ao.adoop.test.utils.usermodules.MultipleOutputReducerForIntegrationTest;
+import ao.adoop.test.utils.usermodules.ReducerForIntegrationTest;
 
 class IntegrationTest {
 	Configuration config = new TestConfiguration();

@@ -1,4 +1,4 @@
-package adooptest;
+package ao.adoop.test.unit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,11 +19,11 @@ import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.InvalidReducerException;
 import ao.adoop.mapreduce.Reducer;
-import ao.adoop.test.test_usermodules.UnitTestMultipleOutputReducer;
-import ao.adoop.test.test_usermodules.UnitTestReducer;
 import ao.adoop.test.utils.SimpleFileLoader;
+import ao.adoop.test.utils.configurations.TestConfiguration;
+import ao.adoop.test.utils.usermodules.UnitTestMultipleOutputReducer;
+import ao.adoop.test.utils.usermodules.UnitTestReducer;
 import ao.adoop.test.utils.CustomAssertions;
-import testsettings.TestConfiguration;
 
 class ReducerTest {
 	Configuration config = new TestConfiguration();

@@ -1,4 +1,4 @@
-package ao.adoop.test.ui;
+package ao.adoop.test.utils.ui;
 
 import static org.junit.jupiter.api.Assertions.fail;
 

@@ -1,4 +1,4 @@
-package testsettings;
+package ao.adoop.test.utils.configurations;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

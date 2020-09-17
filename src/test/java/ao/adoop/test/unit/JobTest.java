@@ -1,4 +1,4 @@
-package adooptest;
+package ao.adoop.test.unit;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,9 +14,9 @@ import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.mapreduce.MultipleInputs;
 import ao.adoop.mapreduce.MultipleOutputs;
-import ao.adoop.test.test_usermodules.UnitTestMapper;
-import ao.adoop.test.test_usermodules.UnitTestMapper2;
-import ao.adoop.test.test_usermodules.UnitTestMapper3;
+import ao.adoop.test.utils.usermodules.UnitTestMapper;
+import ao.adoop.test.utils.usermodules.UnitTestMapper2;
+import ao.adoop.test.utils.usermodules.UnitTestMapper3;
 import javafx.util.Pair;
 
 public class JobTest {

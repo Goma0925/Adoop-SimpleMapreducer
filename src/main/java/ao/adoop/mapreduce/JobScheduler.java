@@ -35,8 +35,8 @@ public class JobScheduler {
 		FileSystemManager fileManager = new FileSystemManager(this.config);
 		fileManager.clearMapOutputBufferDir();
 		
-		long threadMaxThreashhold = 30;
-		String threadMaxThreashholdUnit = "MB";
+		long threadMaxThreashhold = this.config.threadMaxThreashhold;
+		String threadMaxThreashholdUnit = this.config.threadMaxThreashholdUnit;
 		
 		//Map
 		ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = this.job.getMapTasks();
@@ -58,6 +58,7 @@ public class JobScheduler {
 		DataLoader loader = new DataLoader();
 		ArrayList<int[]> chunkIndices = loader.getChunkIndices(inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);        
 		int numberOfThreads = chunkIndices.size();
+		System.out.println(" 	NumberOfChunks:" + Integer.toString(numberOfThreads));
         
 		Mapper[] workers = new Mapper[numberOfThreads];
         Mapper worker = null;
@@ -87,6 +88,7 @@ public class JobScheduler {
 	
 	private PriorityQueue<File> loadReducerInputDirs() {
 		File[] listOfElements = this.config.mapOutputBufferDir.toFile().listFiles();
+		//Use a heap to get the files in order by file name.
 		PriorityQueue<File> targetDirs = new PriorityQueue<File>((file1, file2) -> file1.toString().compareTo(file2.toString()));
 		for (File ele: listOfElements) {
 			if (ele.isDirectory()) {
@@ -122,7 +124,7 @@ public class JobScheduler {
 					inputFiles.add(item);
 				}
 			};			
-        	String id = Integer.toString(i);
+        	String id = Integer.toString(reducerClass.hashCode()) + "-" + Integer.toString(i);
         	worker = (Reducer) reducerConstructor.newInstance(new Object[] {id, this.config, inputFiles, namedOutputs});
             executor.execute(worker);//Run the thread 
             workers[i] = worker;

@@ -1,4 +1,4 @@
-package adooptest;
+package ao.adoop.test.unit;
 
 import java.util.ArrayList;
 import java.util.Map;

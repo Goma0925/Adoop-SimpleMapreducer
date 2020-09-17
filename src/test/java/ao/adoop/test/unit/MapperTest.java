@@ -1,4 +1,4 @@
-package adooptest;
+package ao.adoop.test.unit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,9 +14,9 @@ import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.InvalidMapperException;
 import ao.adoop.mapreduce.Mapper;
-import ao.adoop.test.test_usermodules.UnitTestMapper;
 import ao.adoop.test.utils.SimpleFileLoader;
-import testsettings.TestConfiguration;
+import ao.adoop.test.utils.configurations.TestConfiguration;
+import ao.adoop.test.utils.usermodules.UnitTestMapper;
 
 class MapperTest {
 	Configuration config = new TestConfiguration();
