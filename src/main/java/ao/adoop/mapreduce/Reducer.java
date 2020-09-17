@@ -34,8 +34,6 @@ public abstract class Reducer implements Runnable{
 	protected void setup(Context context) {};
 
 	public void run() {
-		System.out.println(this.workerId + ":Running Reducing Process...");
-		System.out.println(this.workerId + ":Loading files...");
 		//Shuffle
 		Pair<String, ArrayList<String>> keyAndValueList = null;
 		try {
@@ -60,8 +58,8 @@ public abstract class Reducer implements Runnable{
 	public Pair<String, ArrayList<String>> runShuffle(ArrayList<File> inputFiles) throws IOException {
 		DataLoader loader = new DataLoader();
 		String key = "";
-		ArrayList<String> tempoInputLines = new ArrayList<String>();
 		int numberOfFiles = this.inputFiles.size();
+		ArrayList<String> tempoInputLines = new ArrayList<String>(numberOfFiles);
 		for (int i=0; i<numberOfFiles; i++) {
 			ArrayList<String> newInputLines = loader.loadFile(inputFiles.get(i));
 			if (key == "") {
@@ -79,13 +77,11 @@ public abstract class Reducer implements Runnable{
 		//Run the setup method
 		this.setup(resultContext);
 		this.reduce(keyAndValueList.getKey(), keyAndValueList.getValue(), resultContext);		
-		System.out.println(this.workerId + ":Done processing:" + Integer.toString(keyAndValueList.getValue().size()));
 		return resultContext;
 	}
 	
 	private void writeToFiles(Context resultContext) throws IOException {
 		//Write the results to multiple files. One key per one file.
-		System.out.println(this.workerId + ":Writing to file..");
 		Path reduceOutputBaseDir = this.config.finalOutputDir;
 		
 		//Write the default key & value mapping
@@ -148,9 +144,6 @@ public abstract class Reducer implements Runnable{
 	private void writeFinalOutputBasePath(Path baseBufferOutputDir, String namedOutput, String baseFinalOutputDir) throws IOException {
 		//This method creates a new file named "baseOutputDir.txt" in the specified directory and record a baseOutputDir
 		//for each namedOutput
-		System.out.println("baseBufferOutputDir:" + baseBufferOutputDir.toString());
-		System.out.println("namedOutput:" + namedOutput);
-		System.out.println("baseFinalOutputDir:" + baseFinalOutputDir + "\n");
 		File finalOutputBasePathFile = new File(baseBufferOutputDir.toString(), "baseOutputDir.txt");
 		FileWriter fr = new FileWriter(finalOutputBasePathFile, true);
 		BufferedWriter br = new BufferedWriter(fr);

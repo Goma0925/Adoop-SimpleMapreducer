@@ -55,23 +55,19 @@ public abstract class Mapper implements Runnable {
 	};
 	
 	public Context runMap() throws InstantiationException, IllegalAccessException, IOException {		
-		System.out.println(this.workerId + ":Running process...");
 		Context tempoContext = new Context();
 		DataLoader loader = new DataLoader();
 		String[] inputLines = null;
 		int chunkStartIndex = this.startIndex;
-		System.out.println(this.workerId + ":Loading a chunk["+Integer.toString(startIndex) + ","+Integer.toString(endIndex)+"]...");
 		//Run the setup method
 		tempoContext.setNamedOutputs(this.addedNamedOutputs);
 		this.setup(tempoContext);
 		//Read the input file
 		inputLines = loader.loadChunkByLineIndices(inputFile, startIndex, endIndex);
-		System.out.println(this.workerId + ":Done loading a chunk of size:" + Integer.toString(inputLines.length));
 		//Map process
 		for (int i=0; i<inputLines.length; i++) {
 			this.map(Integer.toString(chunkStartIndex), inputLines[i], tempoContext);
 		}
-		System.out.println(this.workerId + ":Done processing:" + Integer.toString(inputLines.length));
 		return tempoContext;
 	};
 	
@@ -110,7 +106,6 @@ public abstract class Mapper implements Runnable {
 	        	keyDir.toFile().mkdir();
 	        }
 	        File outputFile = new File(keyDir.toFile(), config.getMapOutputFileName(this.workerId));
-			System.out.println(this.workerId + ":Writing to file.. :" + outputFile.toString());
 	        FileWriter fr = new FileWriter(outputFile, true);
 			BufferedWriter br = new BufferedWriter(fr);
 			br.write(key);

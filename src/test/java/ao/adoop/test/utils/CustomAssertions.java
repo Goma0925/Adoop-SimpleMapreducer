@@ -12,10 +12,12 @@ public class CustomAssertions {
 		File[] answerFiles = SimpleFileLoader.getChildFiles(answerDir);
 		File[] outputFiles = SimpleFileLoader.getChildFiles(outputDir);
 		System.out.println("Checking output files agaist answer files...");
+		System.out.println("	AnswerDir: " + answerDir.toString());
+		System.out.println("	outputDir: " + outputDir.toString());
 		for (int i=0; i<outputFiles.length; i++) {
 			System.out.println("	Checking if file contents match:");
-			System.out.println("	- Answer file: " + answerFiles[i].toString());
-			System.out.println("	- Output file: " + outputFiles[i].toString());
+			System.out.println("	  - Answer file("+ Integer.toString(i) +"): " + answerFiles[i].toString());
+			System.out.println("	  - Output file:"+ Integer.toString(i) +"): " + outputFiles[i].toString());
 			String answerLines[] = SimpleFileLoader.readFile(answerFiles[i]);
 			String outputLines[] = SimpleFileLoader.readFile(outputFiles[i]);
 			try {

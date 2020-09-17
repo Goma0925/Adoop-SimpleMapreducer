@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,7 +17,7 @@ import ao.adoop.io.FileSystemManager;
 public class JobScheduler {
 	private Timer timer = new Timer();
 	private UserInterface userInterface = null;
-	private ArrayList<File> reducerInputDirs = new ArrayList<File>();
+	private PriorityQueue<File> reducerInputDirs = new PriorityQueue<File>();
 	private Job job = null;
 	private Configuration config = null;
 	
@@ -44,11 +45,10 @@ public class JobScheduler {
 		for (Pair<Path, Class<? extends Mapper>> mapTask: mapTasks) {
 			mapperClass = mapTask.getValue();
 			inputFile = mapTask.getKey().toFile();
-			System.out.println(" 	Mapper:" + mapperClass.toString());
-			System.out.println(" 	Input :" + inputFile.toString());
 			this.runMap(mapperClass, inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);
-		}
+		};
 		
+		//Reduce
 		this.runReduce(this.job.getReducerClass());
 		
 	};
@@ -67,7 +67,7 @@ public class JobScheduler {
         
         this.userInterface.doMappingStart(numberOfThreads);
         for (int i = 0; i < chunkIndices.size(); i++) {
-        	String workerId = mapperClass.getSimpleName() + "-" + Integer.toString(i);
+        	String workerId = Integer.toString(mapperClass.hashCode()) + "-" + Integer.toString(i);
             String[] namedOutputs = this.job.getNamedOutputs().toArray(new String[job.getNamedOutputs().size()]);
         	//Each mapper worker(thread) will read from the input file, map, and write results to a file.
         	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.config, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1], namedOutputs});
@@ -85,12 +85,11 @@ public class JobScheduler {
 		
 	};
 	
-	private ArrayList<File> loadReducerInputDirs() {
+	private PriorityQueue<File> loadReducerInputDirs() {
 		File[] listOfElements = this.config.mapOutputBufferDir.toFile().listFiles();
-		ArrayList<File> targetDirs = new ArrayList<File>();
+		PriorityQueue<File> targetDirs = new PriorityQueue<File>((file1, file2) -> file1.toString().compareTo(file2.toString()));
 		for (File ele: listOfElements) {
 			if (ele.isDirectory()) {
-				System.out.println(ele.toString());
 				targetDirs.add(ele);
 			}
 		};
@@ -118,7 +117,7 @@ public class JobScheduler {
         for (int i=0; i<numberOfThreads; i++) {
 			ArrayList<File> inputFiles = new ArrayList<File>();
 			//Create a list of input files for the reducer from the reducer input directory.
-			for (File item: this.reducerInputDirs.get(i).listFiles()) {
+			for (File item: this.reducerInputDirs.remove().listFiles()) {
 				if (item.isFile()) {
 					inputFiles.add(item);
 				}

@@ -38,9 +38,9 @@ public class MultipleOutputReducerForIntegrationTest extends Reducer {
 			}
 		};
 		if (key.equals("KEY=1") || key.equals("KEY=2")) {
-			this.multipleOutputs.write(key, Integer.toString(counts.get(key))+"|"+this.workerId, "/GROUP1/");
+			this.multipleOutputs.write(key, Integer.toString(counts.get(key)), "/GROUP1/");
 		}else {
-			this.multipleOutputs.write(key, Integer.toString(counts.get(key))+"|"+this.workerId, "/GROUP2/");
+			this.multipleOutputs.write(key, Integer.toString(counts.get(key)), "/GROUP2/");
 		}
 		
 		if (!error.equals("")) {
