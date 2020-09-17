@@ -42,7 +42,7 @@ class IntegrationTest {
 		this.fManager.clearFinalOutputDir();
 	}
 	
-//	@Test
+	@Test
 	void testSingleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	1 input file
@@ -71,7 +71,7 @@ class IntegrationTest {
 
 	};
 	
-//	@Test
+	@Test
 	void testMultipleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	2 input file

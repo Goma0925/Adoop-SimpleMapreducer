@@ -17,7 +17,7 @@ public class CustomAssertions {
 		for (int i=0; i<outputFiles.length; i++) {
 			System.out.println("	Checking if file contents match:");
 			System.out.println("	  - Answer file("+ Integer.toString(i) +"): " + answerFiles[i].toString());
-			System.out.println("	  - Output file:"+ Integer.toString(i) +"): " + outputFiles[i].toString());
+			System.out.println("	  - Output file("+ Integer.toString(i) +"): " + outputFiles[i].toString());
 			String answerLines[] = SimpleFileLoader.readFile(answerFiles[i]);
 			String outputLines[] = SimpleFileLoader.readFile(outputFiles[i]);
 			try {
