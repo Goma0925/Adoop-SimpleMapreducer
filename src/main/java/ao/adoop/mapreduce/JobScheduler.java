@@ -1,7 +1,6 @@
 package ao.adoop.mapreduce;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -10,9 +9,9 @@ import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javafx.util.Pair;
 import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
+import javafx.util.Pair;
 
 public class JobScheduler {
 	private Timer timer = new Timer();
@@ -33,6 +32,7 @@ public class JobScheduler {
 
 	protected void start() throws Exception{
 		FileSystemManager fileManager = new FileSystemManager(this.config);
+		fileManager.initFileSystem();
 		fileManager.clearMapOutputBufferDir();
 		
 		long threadMaxThreashhold = this.config.threadMaxThreashhold;
@@ -80,10 +80,6 @@ public class JobScheduler {
         userInterface.doMappingEnd();
         timer.stopCpuTimer();
         userInterface.displayRunTime("Map runtime: ", timer.getCpuTimer());   
-	};
-	
-	private void saveReducerInputPaths(File[] mapOutputPaths) {
-		
 	};
 	
 	private PriorityQueue<File> loadReducerInputDirs() {

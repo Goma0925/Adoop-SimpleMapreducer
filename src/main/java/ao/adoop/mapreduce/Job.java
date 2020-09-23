@@ -1,8 +1,8 @@
 package ao.adoop.mapreduce;
 
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+
 import javafx.util.Pair;
 
 public class Job {

@@ -2,11 +2,7 @@ package ao.adoop.mapreduce;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-
-import javax.naming.InvalidNameException;
 
 public class Context {
 	//Context class allows Mapper and Reducer to communicate with the main system. 

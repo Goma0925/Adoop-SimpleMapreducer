@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Configuration {
-	public Path systemBaseDir = Paths.get("/Users/Amon/Downloads/Save");
+	public Path systemBaseDir = Paths.get("");
 	public Path jobConfigDir = Paths.get(systemBaseDir.toString(), "user-job-configs");
 	public Path inputDir = Paths.get(systemBaseDir.toString(), "user-inputs");
 	

@@ -1,9 +1,5 @@
 package ao.adoop.mapreduce;
 
-import java.util.ArrayList;
-
-import javax.naming.InvalidNameException;
-
 public class MultipleOutputs {
 	Context context = null;
 	

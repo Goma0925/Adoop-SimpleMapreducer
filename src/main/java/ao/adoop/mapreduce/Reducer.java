@@ -4,7 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -114,7 +113,6 @@ public abstract class Reducer implements Runnable{
 			String stringBuffer = "";
 			BufferedWriter br = new BufferedWriter(fr);
 			
-			int counter = 0;
 			for (Entry<Object, ArrayList<Object>> entry : keyValMapping.entrySet()) {
 		        Object key = entry.getKey();
 		        ArrayList<Object> valueList = entry.getValue();
@@ -140,18 +138,6 @@ public abstract class Reducer implements Runnable{
 			fr.close();
 		}
 	};
-	
-	private void writeFinalOutputBasePath(Path baseBufferOutputDir, String namedOutput, String baseFinalOutputDir) throws IOException {
-		//This method creates a new file named "baseOutputDir.txt" in the specified directory and record a baseOutputDir
-		//for each namedOutput
-		File finalOutputBasePathFile = new File(baseBufferOutputDir.toString(), "baseOutputDir.txt");
-		FileWriter fr = new FileWriter(finalOutputBasePathFile, true);
-		BufferedWriter br = new BufferedWriter(fr);
-		br.write(baseFinalOutputDir);
-		br.close();
-		fr.close();
-	}
-	
 
 	public abstract void reduce(String key, ArrayList<String> values, Context context) throws InvalidNameException;
 }
