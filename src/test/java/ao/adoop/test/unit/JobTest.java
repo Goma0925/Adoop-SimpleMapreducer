@@ -1,5 +1,6 @@
 package ao.adoop.test.unit;
 
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import ao.adoop.mapreduce.FileOutputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.mapreduce.MultipleInputs;
-import ao.adoop.mapreduce.MultipleOutputs;
+import ao.adoop.test.utils.configurations.TestConfiguration;
 import ao.adoop.test.utils.usermodules.UnitTestMapper;
 import ao.adoop.test.utils.usermodules.UnitTestMapper2;
 import ao.adoop.test.utils.usermodules.UnitTestMapper3;
@@ -25,7 +26,7 @@ public class JobTest {
 	@Test
 	void testSingleInput() {
 		//Test if Job can configure a job with a single mapper and a single input file.
-		Path inputFilePath = Paths.get("src/test/resources/map-input.csv");
+		Path inputFilePath = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Class<? extends Mapper> mapperClass = UnitTestMapper.class;
 		
 		Configuration config = new Configuration();
@@ -40,7 +41,7 @@ public class JobTest {
 	};
 	
 	@Test
-	void testMutipleInputs() {
+	void testMultipleInputsUsage() {
 		//Test if Job can configure a job with multiple mappers and a multiple input files.
 		Path[] inputFilePaths = {
 				Paths.get("src/test/resources/map-input-files/map-input.csv"),
@@ -71,27 +72,12 @@ public class JobTest {
 	};
 	
 	@Test
-	void testSingleOutput() {
-		Path outputFilePath = Paths.get("some/output/dir/path");
-		Configuration config = new Configuration();
+	void testSetOutputPath() throws NotDirectoryException {
+		Configuration config = new TestConfiguration();
+		Path outputFilePath = Paths.get(config.finalOutputDir.toString());
 		Job job = Job.getInstance(config, "Test job name");
 		
 		FileOutputFormat.setOutputPath(job, outputFilePath);
 		Assertions.assertEquals(outputFilePath, job.getOutputPath());
-	}
-	
-	@Test
-	void testMutipleOutputs() {
-		//Test if Job holds on to the namedOutput information.
-		//This feature is used when a job outputs results to multiple files.
-		String[] outputNames = {"OUTPUT-1", "OUTPUT-2", "OUTPUT-3"};
-		
-		Configuration config = new Configuration();
-		Job job = Job.getInstance(config, "Test job name");
-		for (String outputName: outputNames) {
-			MultipleOutputs.addNamedOutput(job, outputName);
-		}
-		ArrayList<String> storedOutputNames = job.getNamedOutputs();
-		Assertions.assertArrayEquals(outputNames, storedOutputNames.toArray());
 	}
 }

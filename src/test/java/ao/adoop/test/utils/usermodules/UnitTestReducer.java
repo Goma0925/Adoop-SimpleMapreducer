@@ -10,9 +10,8 @@ import ao.adoop.mapreduce.Reducer;
 
 public class UnitTestReducer extends Reducer {
 
-	public UnitTestReducer(String workerId, Configuration config, ArrayList<File> inputFiles,
-			String[] addedNamedOutputs) {
-		super(workerId, config, inputFiles, addedNamedOutputs);
+	public UnitTestReducer(String workerId, Configuration config, ArrayList<File> inputFiles) {
+		super(workerId, config, inputFiles);
 	}
 
 	public void reduce(String key, ArrayList<String> inputLines, Context context) {

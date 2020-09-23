@@ -9,8 +9,8 @@ import ao.adoop.mapreduce.Mapper;
 public class UnitTestMapper2 extends Mapper{
 
 	public UnitTestMapper2(String workerId, Configuration config, File inputFile, Integer startIndex,
-			Integer endIndex, String[] addedNamedOutputs) {
-		super(workerId, config, inputFile, startIndex, endIndex, addedNamedOutputs);
+			Integer endIndex) {
+		super(workerId, config, inputFile, startIndex, endIndex);
 	}
 
 	@Override

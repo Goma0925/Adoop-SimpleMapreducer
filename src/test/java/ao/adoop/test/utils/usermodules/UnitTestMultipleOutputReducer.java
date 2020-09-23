@@ -12,9 +12,8 @@ import ao.adoop.mapreduce.Reducer;
 
 public class UnitTestMultipleOutputReducer extends Reducer {
 	MultipleOutputs multipleOutput = null;
-	public UnitTestMultipleOutputReducer(String workerId, Configuration config, ArrayList<File> inputFiles,
-			String[] addedNamedOutputs) {
-		super(workerId, config, inputFiles, addedNamedOutputs);
+	public UnitTestMultipleOutputReducer(String workerId, Configuration config, ArrayList<File> inputFiles) {
+		super(workerId, config, inputFiles);
 	}
 
 	@Override

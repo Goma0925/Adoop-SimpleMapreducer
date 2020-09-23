@@ -10,8 +10,8 @@ public class MapperForIntegrationTest2 extends Mapper {
 
 
 	public MapperForIntegrationTest2(String workerId, Configuration config, File inputFile,
-			int startIndex, int endIndex, String[] addedNamedOutputs) {
-		super(workerId, config, inputFile, startIndex, endIndex, addedNamedOutputs);
+			int startIndex, int endIndex) {
+		super(workerId, config, inputFile, startIndex, endIndex);
 	}
 
 	@Override

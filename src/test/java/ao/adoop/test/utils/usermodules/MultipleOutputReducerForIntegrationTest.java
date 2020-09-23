@@ -14,8 +14,8 @@ import ao.adoop.mapreduce.Reducer;
 
 public class MultipleOutputReducerForIntegrationTest extends Reducer {
 	public MultipleOutputReducerForIntegrationTest(String workerId, Configuration config,
-			ArrayList<File> inputFiles, String[] addedNamedOutputs) {
-		super(workerId, config, inputFiles, addedNamedOutputs);
+			ArrayList<File> inputFiles) {
+		super(workerId, config, inputFiles);
 	}
 
 	MultipleOutputs multipleOutputs = null;

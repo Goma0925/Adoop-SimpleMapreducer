@@ -50,7 +50,6 @@ public class JobScheduler {
 		
 		//Reduce
 		this.runReduce(this.job.getReducerClass());
-		
 	};
 
 	public void runMap(Class<? extends Mapper> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {
@@ -58,28 +57,27 @@ public class JobScheduler {
 		DataLoader loader = new DataLoader();
 		ArrayList<int[]> chunkIndices = loader.getChunkIndices(inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);        
 		int numberOfThreads = chunkIndices.size();
-		System.out.println(" 	NumberOfChunks:" + Integer.toString(numberOfThreads));
         
 		Mapper[] workers = new Mapper[numberOfThreads];
         Mapper worker = null;
-        Constructor<?> mapperConstructor = mapperClass.getDeclaredConstructor(new Class[] {String.class, Configuration.class, File.class, int.class, int.class, String[].class});
+        Constructor<?> mapperConstructor = mapperClass.getDeclaredConstructor(new Class[] {String.class, Configuration.class, File.class, int.class, int.class});
         mapperConstructor.setAccessible(true);
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of X threads  
         
         this.userInterface.doMappingStart(numberOfThreads);
+		this.userInterface.displayInputAndMapper(inputFile, mapperClass);
         for (int i = 0; i < chunkIndices.size(); i++) {
         	String workerId = Integer.toString(mapperClass.hashCode()) + "-" + Integer.toString(i);
-            String[] namedOutputs = this.job.getNamedOutputs().toArray(new String[job.getNamedOutputs().size()]);
         	//Each mapper worker(thread) will read from the input file, map, and write results to a file.
-        	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.config, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1], namedOutputs});
+        	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.config, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1]});
         	executor.execute(worker);//Run the thread 
             workers[i] = worker;
 	      };
         executor.shutdown(); 
-        while (!executor.isTerminated()) {   }  
-        userInterface.doMappingEnd();
-        timer.stopCpuTimer();
-        userInterface.displayRunTime("Map runtime: ", timer.getCpuTimer());   
+        while (!executor.isTerminated()) {   };
+        this.timer.stopCpuTimer();
+        this.userInterface.doMappingEnd();
+        this.userInterface.displayRunTime("Map runtime: ", timer.getCpuTimer());   
 	};
 	
 	private PriorityQueue<File> loadReducerInputDirs() {
@@ -95,21 +93,21 @@ public class JobScheduler {
 	};
 	
 	public void runReduce(Class<? extends Reducer> reducerClass) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+		this.timer.startCpuTimer();
 		if (this.reducerInputDirs.size() == 0) {
 			//Load the map output directories if they are not in memory.
 			this.reducerInputDirs = this.loadReducerInputDirs();
-			this.timer.startCpuTimer();
 		};
 
 		//Set up the Reduce phase
         int numberOfThreads = this.reducerInputDirs.size();
         this.userInterface.doReducingStart(numberOfThreads);
-        Constructor<?> reducerConstructor = reducerClass.getDeclaredConstructor(new Class[] {String.class, Configuration.class, ArrayList.class, String[].class});
+		this.userInterface.displayReducer(reducerClass);
+        Constructor<?> reducerConstructor = reducerClass.getDeclaredConstructor(new Class[] {String.class, Configuration.class, ArrayList.class});
         reducerConstructor.setAccessible(true);
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of 2 threads  
         Reducer[] workers = new  Reducer[numberOfThreads];
         Reducer worker = null;
-        String[] namedOutputs = this.job.getNamedOutputs().toArray(new String[job.getNamedOutputs().size()]);
         
         //Run the Reduce phase
         for (int i=0; i<numberOfThreads; i++) {
@@ -121,14 +119,14 @@ public class JobScheduler {
 				}
 			};			
         	String id = Integer.toString(reducerClass.hashCode()) + "-" + Integer.toString(i);
-        	worker = (Reducer) reducerConstructor.newInstance(new Object[] {id, this.config, inputFiles, namedOutputs});
+        	worker = (Reducer) reducerConstructor.newInstance(new Object[] {id, this.config, inputFiles});
             executor.execute(worker);//Run the thread 
             workers[i] = worker;
 		};
         executor.shutdown(); 
         while (!executor.isTerminated()) {   } ;
-        userInterface.doReducingEnd();
         timer.stopCpuTimer();
-        userInterface.displayRunTime("Reduce runtime: ", timer.getCpuTimer());  
+        this.userInterface.doReducingEnd();
+        this.userInterface.displayRunTime("Reduce runtime: ", timer.getCpuTimer());  
 	}
 }

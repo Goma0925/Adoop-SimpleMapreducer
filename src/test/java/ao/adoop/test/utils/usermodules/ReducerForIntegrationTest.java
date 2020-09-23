@@ -9,9 +9,8 @@ import ao.adoop.mapreduce.Reducer;
 
 public class ReducerForIntegrationTest extends Reducer {
 
-	public ReducerForIntegrationTest(String workerId, Configuration config, ArrayList<File> inputFiles,
-			String[] addedNamedOutputs) {
-		super(workerId, config, inputFiles, addedNamedOutputs);
+	public ReducerForIntegrationTest(String workerId, Configuration config, ArrayList<File> inputFiles) {
+		super(workerId, config, inputFiles);
 	}
 
 	@Override

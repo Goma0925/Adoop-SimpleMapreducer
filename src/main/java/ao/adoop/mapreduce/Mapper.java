@@ -19,15 +19,13 @@ public abstract class Mapper implements Runnable {
 	protected int endIndex = 0;
 	protected File inputFile = null;
 	protected Configuration config = null;
-	protected String[] addedNamedOutputs = null;
 	
-	public Mapper(String workerId, Configuration config, File inputFile, Integer startIndex, Integer endIndex, String[] addedNamedOutputs) {
+	public Mapper(String workerId, Configuration config, File inputFile, Integer startIndex, Integer endIndex) {
 		this.workerId = workerId;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
 		this.inputFile = inputFile;
 		this.config = config;
-		this.addedNamedOutputs = addedNamedOutputs;
 	};
 	
 	//This method is intended to be overwritten when the sub class mapper wants to use MutipleOutputs 
@@ -60,7 +58,6 @@ public abstract class Mapper implements Runnable {
 		String[] inputLines = null;
 		int chunkStartIndex = this.startIndex;
 		//Run the setup method
-		tempoContext.setNamedOutputs(this.addedNamedOutputs);
 		this.setup(tempoContext);
 		//Read the input file
 		inputLines = loader.loadChunkByLineIndices(inputFile, startIndex, endIndex);

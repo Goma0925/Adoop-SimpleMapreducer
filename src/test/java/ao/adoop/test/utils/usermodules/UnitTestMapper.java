@@ -11,7 +11,7 @@ public class UnitTestMapper extends Mapper{
 
 	public UnitTestMapper(String workerId, Configuration config, File inputFile, Integer startIndex,
 			Integer endIndex, String[] addedNamedOutputs) {
-		super(workerId, config, inputFile, startIndex, endIndex, addedNamedOutputs);
+		super(workerId, config, inputFile, startIndex, endIndex);
 	}
 
 	public void map(String key, String value, Context context) {

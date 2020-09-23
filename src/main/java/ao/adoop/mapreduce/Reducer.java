@@ -21,7 +21,7 @@ public abstract class Reducer implements Runnable{
 	protected Configuration config = null;
 	protected String[] addedNamedOutputs = null;
 
-	public Reducer(String workerId, Configuration config, ArrayList<File> inputFiles, String[] addedNamedOutputs) {
+	public Reducer(String workerId, Configuration config, ArrayList<File> inputFiles) {
 		this.workerId = workerId;
 		this.inputFiles = inputFiles;
 		this.config = config;

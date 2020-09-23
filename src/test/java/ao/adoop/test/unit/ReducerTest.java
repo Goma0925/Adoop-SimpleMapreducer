@@ -53,7 +53,7 @@ class ReducerTest {
 		};
 		
 		//Run reduce
-		Reducer reducer = new UnitTestReducer(reducerId, this.config, reduceInputFiles, new String[0]);
+		Reducer reducer = new UnitTestReducer(reducerId, this.config, reduceInputFiles);
 		reducer.run();
 				
 		//Load the outputs and the expected answers.
@@ -92,7 +92,7 @@ class ReducerTest {
 		};
 		
 		//Run reduce
-		Reducer reducer = new UnitTestMultipleOutputReducer(reducerId, this.config, reduceInputFiles, new String[0]);
+		Reducer reducer = new UnitTestMultipleOutputReducer(reducerId, this.config, reduceInputFiles);
 		reducer.run();
 		
 		CustomAssertions.assertEachFileContent(answerDir1, outputDir1);
