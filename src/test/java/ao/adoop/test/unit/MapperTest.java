@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
-import ao.adoop.mapreduce.InvalidMapperException;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.test.utils.SimpleFileLoader;
 import ao.adoop.test.utils.configurations.TestConfiguration;

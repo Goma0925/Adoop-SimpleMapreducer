@@ -17,7 +17,6 @@ import org.junit.jupiter.api.Test;
 import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
-import ao.adoop.mapreduce.InvalidReducerException;
 import ao.adoop.mapreduce.Reducer;
 import ao.adoop.test.utils.SimpleFileLoader;
 import ao.adoop.test.utils.configurations.TestConfiguration;
@@ -37,7 +36,7 @@ class ReducerTest {
 	}
 	
 	@Test
-	void testSingleOutput() throws InvalidReducerException, IOException {	
+	void testSingleOutput() throws IOException {	
 		//Set up test
 		String reducerId = "Test-Reduce-process";
 		Path reduceInputFileDir = Paths.get("src/test/resources/reduce-input-files");
