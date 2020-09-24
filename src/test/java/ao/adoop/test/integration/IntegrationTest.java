@@ -1,14 +1,10 @@
 package ao.adoop.test.integration;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,9 +14,7 @@ import ao.adoop.mapreduce.FileInputFormat;
 import ao.adoop.mapreduce.FileOutputFormat;
 import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.MultipleInputs;
-import ao.adoop.mapreduce.MultipleOutputs;
 import ao.adoop.test.utils.CustomAssertions;
-import ao.adoop.test.utils.SimpleFileLoader;
 import ao.adoop.test.utils.configurations.TestConfiguration;
 import ao.adoop.test.utils.usermodules.MapperForIntegrationTest1;
 import ao.adoop.test.utils.usermodules.MapperForIntegrationTest2;
@@ -37,12 +31,10 @@ class IntegrationTest {
 	
 	@BeforeEach
 	void cleanBuffers() throws IOException {
-		this.fManager.initFileSystem();
-		this.fManager.clearMapOutputBufferDir();
 		this.fManager.clearFinalOutputDir();
 	}
 	
-	@Test
+//	@Test
 	void testSingleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	1 input file
@@ -103,7 +95,7 @@ class IntegrationTest {
 
 	};
 	
-	@Test
+//	@Test
 	void testMultipleMapperSingleReducerWithMutipleOutputFiles() throws Exception {
 		//This test checks for the case:
 		//	2 input file

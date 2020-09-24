@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
+import ao.adoop.mapreduce.InputSplit;
+import ao.adoop.mapreduce.MapTask;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.test.utils.SimpleFileLoader;
 import ao.adoop.test.utils.configurations.TestConfiguration;
@@ -34,8 +38,9 @@ class MapperTest {
 		int endIndex = 50;
 		String path = "src/test/resources/map-input-files/map-input.csv";
 		String mapperId = "Test-ID";
-		File inputFile = new File(path);
-		Mapper mapper = new UnitTestMapper(mapperId, this.config, inputFile, startIndex, endIndex, new String[0]);
+		Path inputFile = Paths.get(path);
+		InputSplit split = new InputSplit(inputFile, startIndex, endIndex);
+		Mapper mapper = new UnitTestMapper(mapperId, this.config, split);
 		mapper.run();
 		
 		//Check output

@@ -25,7 +25,6 @@ public abstract class Reducer implements Runnable{
 		this.workerId = workerId;
 		this.inputFiles = inputFiles;
 		this.config = config;
-		this.addedNamedOutputs = addedNamedOutputs;
 	}
 	
 	//This method is intended to be overwritten when the sub class reducer wants to use MutipleOutputs 

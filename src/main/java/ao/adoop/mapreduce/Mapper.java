@@ -11,20 +11,14 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import ao.adoop.io.DataLoader;
-
 public abstract class Mapper implements Runnable {
-	protected String workerId = null;
-	protected int startIndex = 0;
-	protected int endIndex = 0;
-	protected File inputFile = null;
-	protected Configuration config = null;
+	private String workerId = null;
+	private Configuration config = null;
+	private InputSplit inputSplit = null;
 	
-	public Mapper(String workerId, Configuration config, File inputFile, Integer startIndex, Integer endIndex) {
+	public Mapper(String workerId, Configuration config, InputSplit inputSplit) {
 		this.workerId = workerId;
-		this.startIndex = startIndex;
-		this.endIndex = endIndex;
-		this.inputFile = inputFile;
+		this.inputSplit = inputSplit;
 		this.config = config;
 	};
 	
@@ -53,17 +47,14 @@ public abstract class Mapper implements Runnable {
 	};
 	
 	public Context runMap() throws InstantiationException, IllegalAccessException, IOException {		
-		Context tempoContext = new Context();
-		DataLoader loader = new DataLoader();
-		String[] inputLines = null;
-		int chunkStartIndex = this.startIndex;
 		//Run the setup method
+		Context tempoContext = new Context();
 		this.setup(tempoContext);
 		//Read the input file
-		inputLines = loader.loadChunkByLineIndices(inputFile, startIndex, endIndex);
+		String[] inputLines = this.inputSplit.getLines();
 		//Map process
 		for (int i=0; i<inputLines.length; i++) {
-			this.map(Integer.toString(chunkStartIndex), inputLines[i], tempoContext);
+			this.map(Integer.toString(i), inputLines[i], tempoContext);
 		}
 		return tempoContext;
 	};

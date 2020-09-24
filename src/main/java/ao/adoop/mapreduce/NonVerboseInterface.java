@@ -1,22 +1,11 @@
 package ao.adoop.mapreduce;
 
-import java.io.File;
 import java.nio.file.Path;
 
 public class NonVerboseInterface implements  UserInterface{
 
 	@Override
 	public void displayRunTime(String label, double runTime) {
-		
-	}
-
-	@Override
-	public void displayInputAndMapper(File inputFile, Class<? extends Mapper> mapperClass) {
-		
-	}
-
-	@Override
-	public void displayReducer(Class<? extends Reducer> reducerClass) {
 		
 	}
 
@@ -41,7 +30,12 @@ public class NonVerboseInterface implements  UserInterface{
 	}
 
 	@Override
-	public void doOnExit() {
+	public void doOnExit(Path finalOutputPath) {
+		
+	}
+
+	@Override
+	public void onStart() {
 		
 	}
 

@@ -3,20 +3,16 @@ package ao.adoop.mapreduce;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
-import javafx.util.Pair;
 
 public class JobScheduler {
 	private Timer timer = new Timer();
 	private UserInterface userInterface = null;
-	private PriorityQueue<File> reducerInputDirs = new PriorityQueue<File>();
 	private Job job = null;
 	private Configuration config = null;
 	
@@ -35,46 +31,46 @@ public class JobScheduler {
 		fileManager.initFileSystem();
 		fileManager.clearMapOutputBufferDir();
 		
-		long threadMaxThreashhold = this.config.threadMaxThreashhold;
-		String threadMaxThreashholdUnit = this.config.threadMaxThreashholdUnit;
-		
 		//Map
-		ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = this.job.getMapTasks();
-		Class<? extends Mapper> mapperClass = null;
-		File inputFile = null;
-		for (Pair<Path, Class<? extends Mapper>> mapTask: mapTasks) {
-			mapperClass = mapTask.getValue();
-			inputFile = mapTask.getKey().toFile();
-			this.runMap(mapperClass, inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);
-		};
-		
+		this.runMap(this.job.getMapTasks());
+
 		//Reduce
 		this.runReduce(this.job.getReducerClass());
+		this.userInterface.doOnExit(this.config.finalOutputDir);
 	};
 
-	public void runMap(Class<? extends Mapper> mapperClass, File inputFile, long threadMaxThreashhold, String threadMaxThreashholdUnit) throws Exception {
+	public void runMap(ArrayList<MapTask> mapTasks) throws Exception {
 		this.timer.startCpuTimer();
-		DataLoader loader = new DataLoader();
-		ArrayList<int[]> chunkIndices = loader.getChunkIndices(inputFile, threadMaxThreashhold, threadMaxThreashholdUnit);        
-		int numberOfThreads = chunkIndices.size();
         
+		//Set up mapper threads
+		int numberOfThreads = mapTasks.size();
+		this.userInterface.doMappingStart(numberOfThreads);
 		Mapper[] workers = new Mapper[numberOfThreads];
         Mapper worker = null;
-        Constructor<?> mapperConstructor = mapperClass.getDeclaredConstructor(new Class[] {String.class, Configuration.class, File.class, int.class, int.class});
-        mapperConstructor.setAccessible(true);
+        MapTask mapTask = null;
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of X threads  
         
-        this.userInterface.doMappingStart(numberOfThreads);
-		this.userInterface.displayInputAndMapper(inputFile, mapperClass);
-        for (int i = 0; i < chunkIndices.size(); i++) {
-        	String workerId = Integer.toString(mapperClass.hashCode()) + "-" + Integer.toString(i);
+//        this.userInterface.doMappingStart(numberOfThreads);
+//		this.userInterface.displayInputAndMapper(inputFile, mapperClass);
+//        for (int i = 0; i < chunkIndices.size(); i++) {
+//        	String workerId = Integer.toString(mapperClass.hashCode()) + "-" + Integer.toString(i);
+//        	//Each mapper worker(thread) will read from the input file, map, and write results to a file.
+//        	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.config, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1]});
+//        	executor.execute(worker);//Run the thread 
+//            workers[i] = worker;
+//	      };
+        for (int i = 0; i < mapTasks.size(); i++) {
         	//Each mapper worker(thread) will read from the input file, map, and write results to a file.
-        	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.config, inputFile, chunkIndices.get(i)[0], chunkIndices.get(i)[1]});
+        	mapTask = mapTasks.get(i);
+        	String workerId = mapTask.hashCode() + "-" + Integer.toString(i);
+            Constructor<?> mapperConstructor = mapTask.getMapperClass().getDeclaredConstructor(new Class[] {String.class, Configuration.class, InputSplit.class});
+            mapperConstructor.setAccessible(true);
+        	worker = (Mapper) mapperConstructor.newInstance(new Object[] {workerId, this.config, mapTask.getInputSplit()});
         	executor.execute(worker);//Run the thread 
             workers[i] = worker;
 	      };
         executor.shutdown(); 
-        while (!executor.isTerminated()) {   };
+        while (!executor.isTerminated()) { Thread.sleep(200);   };
         this.timer.stopCpuTimer();
         this.userInterface.doMappingEnd();
         this.userInterface.displayRunTime("Map runtime: ", timer.getCpuTimer());   
@@ -92,17 +88,13 @@ public class JobScheduler {
 		return targetDirs;
 	};
 	
-	public void runReduce(Class<? extends Reducer> reducerClass) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException{
+	public void runReduce(Class<? extends Reducer> reducerClass) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException{
 		this.timer.startCpuTimer();
-		if (this.reducerInputDirs.size() == 0) {
-			//Load the map output directories if they are not in memory.
-			this.reducerInputDirs = this.loadReducerInputDirs();
-		};
 
 		//Set up the Reduce phase
-        int numberOfThreads = this.reducerInputDirs.size();
+		PriorityQueue<File> reducerInputDirs = this.loadReducerInputDirs();
+        int numberOfThreads = reducerInputDirs.size();
         this.userInterface.doReducingStart(numberOfThreads);
-		this.userInterface.displayReducer(reducerClass);
         Constructor<?> reducerConstructor = reducerClass.getDeclaredConstructor(new Class[] {String.class, Configuration.class, ArrayList.class});
         reducerConstructor.setAccessible(true);
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);//creating a pool of 2 threads  
@@ -113,18 +105,18 @@ public class JobScheduler {
         for (int i=0; i<numberOfThreads; i++) {
 			ArrayList<File> inputFiles = new ArrayList<File>();
 			//Create a list of input files for the reducer from the reducer input directory.
-			for (File item: this.reducerInputDirs.remove().listFiles()) {
+			for (File item: reducerInputDirs.remove().listFiles()) {
 				if (item.isFile()) {
 					inputFiles.add(item);
 				}
-			};			
+			};
         	String id = Integer.toString(reducerClass.hashCode()) + "-" + Integer.toString(i);
         	worker = (Reducer) reducerConstructor.newInstance(new Object[] {id, this.config, inputFiles});
             executor.execute(worker);//Run the thread 
             workers[i] = worker;
 		};
         executor.shutdown(); 
-        while (!executor.isTerminated()) {   } ;
+        while (!executor.isTerminated()) { Thread.sleep(200); } ;
         timer.stopCpuTimer();
         this.userInterface.doReducingEnd();
         this.userInterface.displayRunTime("Reduce runtime: ", timer.getCpuTimer());  

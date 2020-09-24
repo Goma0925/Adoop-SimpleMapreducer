@@ -1,16 +1,15 @@
 package ao.adoop.test.utils.usermodules;
 
-import java.io.File;
-
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
+import ao.adoop.mapreduce.InputSplit;
+import ao.adoop.mapreduce.MapTask;
 import ao.adoop.mapreduce.Mapper;
 
 public class MapperForIntegrationTest1 extends Mapper {
 
-	public MapperForIntegrationTest1(String workerId, Configuration config, File inputFile,
-			int startIndex, int endIndex) {
-		super(workerId, config, inputFile, startIndex, endIndex);
+	public MapperForIntegrationTest1(String workerId, Configuration config, InputSplit inputSplit) {
+		super(workerId, config, inputSplit);
 	}
 
 	@Override
