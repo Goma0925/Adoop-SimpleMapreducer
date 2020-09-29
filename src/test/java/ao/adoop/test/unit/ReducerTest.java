@@ -1,38 +1,39 @@
 package ao.adoop.test.unit;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.junit.Before;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Reducer;
+import ao.adoop.test.utils.CustomAssertions;
 import ao.adoop.test.utils.SimpleFileLoader;
 import ao.adoop.test.utils.configurations.TestConfiguration;
 import ao.adoop.test.utils.usermodules.UnitTestMultipleOutputReducer;
 import ao.adoop.test.utils.usermodules.UnitTestReducer;
-import ao.adoop.test.utils.CustomAssertions;
 
 class ReducerTest {
 	Configuration config = new TestConfiguration();
 	FileSystemManager fileSystemManager = new FileSystemManager(this.config);
+	Path outputDir = Paths.get(this.config.getBaseDir().toAbsolutePath().toString(), "final-outputs");
 
+	public ReducerTest() throws IOException {
+		this.config.setFinalOutputDir(this.outputDir);
+		this.fileSystemManager.initFileSystem();
+	};
 	
+
 	@BeforeEach
 	void clean() throws IOException {
-		this.fileSystemManager.initFileSystem();
-		this.fileSystemManager.clearFinalOutputDir();
+		this.fileSystemManager.clearDir(this.outputDir);
 	}
 	
 	@Test
@@ -41,7 +42,7 @@ class ReducerTest {
 		String reducerId = "Test-Reduce-process";
 		Path reduceInputFileDir = Paths.get("src/test/resources/reduce-input-files");
 		Path reduceOutputAnswerFileDir = Paths.get("src/test/resources/reduce-test-answer/single-output");
-		Path outputDir = this.config.finalOutputDir;
+		Path outputDir = this.outputDir;
 		
 		//Get the reduce input file paths
 		File[] reduceInputFilesInArray = reduceInputFileDir.toFile().listFiles();
@@ -79,8 +80,8 @@ class ReducerTest {
 		Path reduceInputFileDir = Paths.get("src/test/resources/reduce-input-files");
 		Path answerDir1 = Paths.get("src/test/resources/reduce-test-answer/multiple-outputs/output-dir1");
 		Path answerDir2 = Paths.get("src/test/resources/reduce-test-answer/multiple-outputs/output-dir2");
-		Path outputDir1 = Paths.get(this.config.finalOutputDir.toString(), "output-dir1");
-		Path outputDir2 = Paths.get(this.config.finalOutputDir.toString(), "output-dir2");
+		Path outputDir1 = Paths.get(this.outputDir.toString(), "output-dir1");
+		Path outputDir2 = Paths.get(this.outputDir.toString(), "output-dir2");
 		
 		//Get the reduce input file paths
 		File[] reduceInputFilesInArray = reduceInputFileDir.toFile().listFiles();

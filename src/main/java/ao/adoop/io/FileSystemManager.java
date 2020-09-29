@@ -23,11 +23,9 @@ public class FileSystemManager {
 
 	public void initFileSystem() throws IOException {		
 		Path[] dirPaths = {
-				this.config.systemBaseDir,
-				this.config.mapOutputBufferDir,
-				this.config.inputDir,
-				this.config.jobConfigDir,
-				this.config.finalOutputDir,
+				this.config.getBaseDir(),
+				this.config.getMapOutputBufferDir(),
+				this.config.getFinalOutputDir()
 		};
 		System.out.println("Checking and setting up the required directories...");
 		for (Path dirPath: dirPaths) {
@@ -57,7 +55,7 @@ public class FileSystemManager {
 	
 	public void clearMapOutputBufferDir() throws NotDirectoryException {
 		//Delete all the files and directories in the map output base dir.
-		File mapOutputBufferDir = this.config.mapOutputBufferDir.toFile();
+		File mapOutputBufferDir = this.config.getMapOutputBufferDir().toFile();
 		if (!mapOutputBufferDir.isDirectory()) {
 			throw new NotDirectoryException("MapOutputBufferDir '" + mapOutputBufferDir.toString() + "' is not a directory.");
 		};
@@ -68,9 +66,9 @@ public class FileSystemManager {
         };
 	};
 	
-	public void clearFinalOutputDir() throws NotDirectoryException {
+	public void clearDir(Path dir) throws NotDirectoryException {
 		//Delete all the files and directories in the map output base dir.
-		File reduceOutputBaseDir = this.config.finalOutputDir.toFile();
+		File reduceOutputBaseDir = dir.toFile();
 		if (!reduceOutputBaseDir.isDirectory()) {
 			throw new NotDirectoryException("ReduceOutputBufferDir '" + reduceOutputBaseDir.toString() + "' is not a directory.");
 		};

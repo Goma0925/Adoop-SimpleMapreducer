@@ -1,21 +1,17 @@
 package ao.adoop.test.unit;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import ao.adoop.io.DataLoader;
 import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.InputSplit;
-import ao.adoop.mapreduce.MapTask;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.test.utils.SimpleFileLoader;
 import ao.adoop.test.utils.configurations.TestConfiguration;
@@ -24,13 +20,19 @@ import ao.adoop.test.utils.usermodules.UnitTestMapper;
 class MapperTest {
 	Configuration config = new TestConfiguration();
 	FileSystemManager fileSystemManager = new FileSystemManager(this.config);
-	
+	Path outputDir = Paths.get(this.config.getBaseDir().toAbsolutePath().toString(), "final-outputs");
+
+	public MapperTest() throws NotDirectoryException {
+		//For a testing purpose, set the output directory that is usually set at the starting phase.
+		this.config.setFinalOutputDir(this.outputDir);
+	}
+
 	@Test
 	void matchInputAndOutput() throws IOException {
 		//Set up the file storage
 		this.fileSystemManager.initFileSystem();
 		this.fileSystemManager.clearMapOutputBufferDir();
-		File outputDir = config.mapOutputBufferDir.toFile();
+		File outputDir = this.outputDir.toFile();
 		File outputFile = null;
 
 		

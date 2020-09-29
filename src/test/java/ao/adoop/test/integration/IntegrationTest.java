@@ -1,6 +1,7 @@
 package ao.adoop.test.integration;
 
 import java.io.IOException;
+import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -24,17 +25,19 @@ import ao.adoop.test.utils.usermodules.ReducerForIntegrationTest;
 class IntegrationTest {
 	Configuration config = new TestConfiguration();
 	FileSystemManager fManager = new FileSystemManager(this.config);
+	Path outputDir = Paths.get(this.config.getBaseDir().toAbsolutePath().toString(), "final-outputs");
 
-	@Before
-	void setup() throws IOException {
+	public IntegrationTest() throws NotDirectoryException {
+		//For a testing purpose, set the output directory that is usually set at the starting phase.
+		this.config.setFinalOutputDir(this.outputDir);
 	}
-	
+
 	@BeforeEach
 	void cleanBuffers() throws IOException {
-		this.fManager.clearFinalOutputDir();
+		this.fManager.clearDir(this.outputDir);
 	}
 	
-//	@Test
+	@Test
 	void testSingleMapperSingleReducer() throws Exception {
 		//This test checks for the case:
 		//	1 input file
@@ -42,7 +45,7 @@ class IntegrationTest {
 		//	1 reducer class.
 		//  1 output files.
 		Path inputFilePath = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
-		Path outputDir = this.config.mapOutputBufferDir;
+		Path outputDir = this.outputDir;
 		Path answerFileDir = Paths.get("src/test/resources/integration-test-answers/single-mapper-single-reducer");
 		
 		Configuration config = new TestConfiguration();
@@ -72,7 +75,7 @@ class IntegrationTest {
 		//  1 output files.
 		Path inputFilePath1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFilePath2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputDir = this.config.finalOutputDir;
+		Path outputDir = this.outputDir;
 		Path answerFileDir = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer");
 		
 		Configuration config = new TestConfiguration();
@@ -95,7 +98,7 @@ class IntegrationTest {
 
 	};
 	
-//	@Test
+	@Test
 	void testMultipleMapperSingleReducerWithMutipleOutputFiles() throws Exception {
 		//This test checks for the case:
 		//	2 input file
@@ -104,7 +107,7 @@ class IntegrationTest {
 		//  2 output files.
 		Path inputFile1 = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Path inputFile2 = Paths.get("src/test/resources/map-input-files/integration-test-input2.csv");
-		Path outputDir = this.config.finalOutputDir;
+		Path outputDir = this.outputDir;
 		Path outputDir1 = Paths.get(outputDir.toString() + "/GROUP1/"); //Output group1 dir
 		Path outputDir2 = Paths.get(outputDir.toString() + "/GROUP2/"); //Output group2 dir
 		Path answerFileDir1 = Paths.get("src/test/resources/integration-test-answers/multiple-mapper-single-reducer-multiple-outputs1");

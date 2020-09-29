@@ -23,8 +23,8 @@ public class FileInputFormat {
 		if (!Files.exists(inputPath)) {
 			throw new InvalidPathException(inputPath.toAbsolutePath().toString(), "Input directory or file does not exists.");
 		}
-		long maxSplitSize = job.config.threadMaxThreashhold;
-		String dataUnit = job.config.threadMaxThreashholdUnit;
+		long maxSplitSize = job.config.getThreadMaxThreashhold();
+		String dataUnit = job.config.getThreadMaxThreasholdUnit();
 		if (Files.isDirectory(inputPath)) {
 			for (File fileOrDir: inputPath.toFile().listFiles()) {
 				if (fileOrDir.isFile()) {

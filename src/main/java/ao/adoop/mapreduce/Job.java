@@ -66,7 +66,7 @@ public class Job {
 		return this.finalOutputDir;
 	};
 	
-	private void checkSetup() throws NoMapperSetException, NotDirectoryException {
+	private void check() throws NoMapperSetException, NotDirectoryException {
 		// Throw NoMapperSetException if no default mapper is not set and the first 
 		int size = this.mapTasks.size();
 		for (int i=0; i<size; i++) {
@@ -77,7 +77,8 @@ public class Job {
 	}
 
 	public void waitForCompletion(boolean verbose) throws Exception {
-		this.checkSetup();
+		this.check();
+		this.config.check();
 		new JobScheduler(this, verbose).start();
 	}
 

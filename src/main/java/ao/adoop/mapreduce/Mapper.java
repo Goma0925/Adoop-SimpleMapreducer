@@ -43,7 +43,8 @@ public abstract class Mapper implements Runnable {
 			this.writeToFiles(resultContext);
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		};
+		System.gc();
 	};
 	
 	public Context runMap() throws InstantiationException, IllegalAccessException, IOException {		
@@ -67,11 +68,11 @@ public abstract class Mapper implements Runnable {
 		//Write key & value to each baseOutputPath's 
 		Path targetOutputDir = null;
 		Map<Object, ArrayList<Object>> keyValMapping = null;
-		Path finalOutputBaseDir = this.config.finalOutputDir;
+		Path finalOutputBaseDir = this.config.getFinalOutputDir();
 		for (String baseOutputPath: keyValMappingByBaseOutputPath.keySet()) {
 			if (baseOutputPath.equals("")) {
 				//Regular output goes into the mapper output buffer directory.
-				targetOutputDir =  this.config.mapOutputBufferDir;
+				targetOutputDir =  this.config.getMapOutputBufferDir();
 			}else {
 				//Multiple output to a particular outputPath which was 
 				//specified by user goes into the final output directory. 
@@ -86,10 +87,12 @@ public abstract class Mapper implements Runnable {
 		String key;
 		Path keyDir;
 		ArrayList<Object> valueList;
+		System.out.println(this.workerId+" | Writing in:"+baseBufferOutputDir.toAbsolutePath().toString());
 		for (Entry<Object, ArrayList<Object>> entry : keyValMapping.entrySet()) {
 	        key = entry.getKey().toString();
 	        valueList = entry.getValue();
-	        keyDir = Paths.get(config.mapOutputBufferDir.toString(), key);
+	        keyDir = Paths.get(config.getMapOutputBufferDir().toString(), key);
+			System.out.println(this.workerId+" | Writing in:"+keyDir.toAbsolutePath().toString());
 	        if (!Files.exists(keyDir)){
 	        	keyDir.toFile().mkdir();
 	        }

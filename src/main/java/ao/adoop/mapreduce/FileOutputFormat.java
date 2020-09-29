@@ -7,7 +7,7 @@ import java.nio.file.Path;
 public class FileOutputFormat {
 	public static void setOutputPath(Job job, Path outputDirPath) throws NotDirectoryException {
 		if (Files.isDirectory(outputDirPath)) {
-			job.setOutputPath(outputDirPath);
+			job.config.setFinalOutputDir(outputDirPath);
 		}else {
 			throw new NotDirectoryException(outputDirPath.toAbsolutePath().toString());
 		}

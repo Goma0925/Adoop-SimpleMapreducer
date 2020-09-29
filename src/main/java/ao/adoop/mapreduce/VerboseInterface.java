@@ -6,7 +6,7 @@ public class VerboseInterface implements  UserInterface{
 	private Timer totalDuration = new Timer();
 	@Override
 	public void displayRunTime(String label, double runTime) {
-	    System.out.println("	" + label + Double.toString(runTime));
+	    System.out.println("	" + label + Double.toString(runTime) + " secs");
 	}
 
 	@Override

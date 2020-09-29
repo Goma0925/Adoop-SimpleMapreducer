@@ -80,7 +80,7 @@ public abstract class Reducer implements Runnable{
 	
 	private void writeToFiles(Context resultContext) throws IOException {
 		//Write the results to multiple files. One key per one file.
-		Path reduceOutputBaseDir = this.config.finalOutputDir;
+		Path reduceOutputBaseDir = this.config.getFinalOutputDir();
 		
 		//Write the default key & value mapping
 		Map<String, Map<Object, ArrayList<Object>>> keyValMappingByBaseOutputPath = resultContext.getKeyValMappingsByBaseOutputPath(); 
