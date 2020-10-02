@@ -9,21 +9,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.naming.InvalidNameException;
-
-import ao.adoop.io.DataLoader;
 import javafx.util.Pair;
 
 public abstract class Reducer implements Runnable{
 	protected String workerId = null;
-	protected ArrayList<File> inputFiles = null;
+	protected ReduceInputSplit inputSplit = null;
 	protected Configuration config = null;
 	protected String[] addedNamedOutputs = null;
 
-	public Reducer(String workerId, Configuration config, ArrayList<File> inputFiles) {
+	public Reducer(String workerId, Configuration config, ReduceInputSplit inputSplit) {
 		this.workerId = workerId;
-		this.inputFiles = inputFiles;
+		this.inputSplit = inputSplit;
 		this.config = config;
 	}
 	
@@ -35,17 +31,14 @@ public abstract class Reducer implements Runnable{
 		//Shuffle
 		Pair<String, ArrayList<String>> keyAndValueList = null;
 		try {
-			keyAndValueList = this.runShuffle(this.inputFiles);
+			keyAndValueList = this.runShuffle(this.inputSplit);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 		//Reduce
 		Context resultContext = null;
-		try {
-			resultContext = this.runReduce(keyAndValueList);
-		} catch (InvalidNameException e) {
-			e.printStackTrace();
-		}
+		resultContext = this.runReduce(keyAndValueList);
+
 		try {
 			this.writeToFiles(resultContext);
 		} catch (Exception e) {
@@ -53,23 +46,11 @@ public abstract class Reducer implements Runnable{
 		}
 	};
 
-	public Pair<String, ArrayList<String>> runShuffle(ArrayList<File> inputFiles) throws IOException {
-		DataLoader loader = new DataLoader();
-		String key = "";
-		int numberOfFiles = this.inputFiles.size();
-		ArrayList<String> tempoInputLines = new ArrayList<String>(numberOfFiles);
-		for (int i=0; i<numberOfFiles; i++) {
-			ArrayList<String> newInputLines = loader.loadFile(inputFiles.get(i));
-			if (key == "") {
-				key = newInputLines.get(0); //Get the first row that represents the key of the mapping outputs.
-			};
-			newInputLines.remove(0);//Remove the first element of the lines because it is a key.
-			tempoInputLines.addAll(newInputLines);
-		};
-		return new Pair<String, ArrayList<String>>(key, tempoInputLines);
+	public Pair<String, ArrayList<String>> runShuffle(ReduceInputSplit inputSplit) throws IOException {
+		return inputSplit.getLines();
 	};
 	
-	public Context runReduce(Pair<String, ArrayList<String>> keyAndValueList) throws InvalidNameException  {
+	public Context runReduce(Pair<String, ArrayList<String>> keyAndValueList){
 		Context resultContext = new Context();
 		resultContext.setNamedOutputs(this.addedNamedOutputs);
 		//Run the setup method
@@ -138,5 +119,5 @@ public abstract class Reducer implements Runnable{
 		}
 	};
 
-	public abstract void reduce(String key, ArrayList<String> values, Context context) throws InvalidNameException;
+	public abstract void reduce(String key, ArrayList<String> values, Context context);
 }

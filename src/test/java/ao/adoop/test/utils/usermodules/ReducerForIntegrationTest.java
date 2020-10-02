@@ -1,16 +1,16 @@
 package ao.adoop.test.utils.usermodules;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
+import ao.adoop.mapreduce.ReduceInputSplit;
 import ao.adoop.mapreduce.Reducer;
 
 public class ReducerForIntegrationTest extends Reducer {
 
-	public ReducerForIntegrationTest(String workerId, Configuration config, ArrayList<File> inputFiles) {
-		super(workerId, config, inputFiles);
+	public ReducerForIntegrationTest(String workerId, Configuration config, ReduceInputSplit inputSplit) {
+		super(workerId, config, inputSplit);
 	}
 
 	@Override

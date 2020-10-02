@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
+import ao.adoop.mapreduce.ReduceInputSplit;
 import ao.adoop.mapreduce.Reducer;
 import ao.adoop.test.utils.CustomAssertions;
 import ao.adoop.test.utils.SimpleFileLoader;
@@ -46,14 +47,14 @@ class ReducerTest {
 		
 		//Get the reduce input file paths
 		File[] reduceInputFilesInArray = reduceInputFileDir.toFile().listFiles();
-		ArrayList<File> reduceInputFiles = new ArrayList<File>();
-		
+		ArrayList<Path> reduceInputFiles = new ArrayList<Path>();
 		for (File inputFile: reduceInputFilesInArray) {
-			reduceInputFiles.add(inputFile);
+			reduceInputFiles.add(Paths.get(inputFile.getAbsolutePath()));
 		};
 		
 		//Run reduce
-		Reducer reducer = new UnitTestReducer(reducerId, this.config, reduceInputFiles);
+		ReduceInputSplit inputSplit = new ReduceInputSplit(reduceInputFiles.toArray(new Path[reduceInputFiles.size()]));
+		Reducer reducer = new UnitTestReducer(reducerId, this.config, inputSplit);
 		reducer.run();
 				
 		//Load the outputs and the expected answers.
@@ -85,14 +86,14 @@ class ReducerTest {
 		
 		//Get the reduce input file paths
 		File[] reduceInputFilesInArray = reduceInputFileDir.toFile().listFiles();
-		ArrayList<File> reduceInputFiles = new ArrayList<File>();
-		
+		ArrayList<Path> reduceInputFiles = new ArrayList<Path>();
 		for (File inputFile: reduceInputFilesInArray) {
-			reduceInputFiles.add(inputFile);
+			reduceInputFiles.add(Paths.get(inputFile.getAbsolutePath()));
 		};
 		
 		//Run reduce
-		Reducer reducer = new UnitTestMultipleOutputReducer(reducerId, this.config, reduceInputFiles);
+		ReduceInputSplit inputSplit = new ReduceInputSplit(reduceInputFiles.toArray(new Path[reduceInputFiles.size()]));
+		Reducer reducer = new UnitTestMultipleOutputReducer(reducerId, this.config, inputSplit);
 		reducer.run();
 		
 		CustomAssertions.assertEachFileContent(answerDir1, outputDir1);

@@ -14,9 +14,9 @@ import java.util.Map.Entry;
 public abstract class Mapper implements Runnable {
 	private String workerId = null;
 	private Configuration config = null;
-	private InputSplit inputSplit = null;
+	private MapInputSplit inputSplit = null;
 	
-	public Mapper(String workerId, Configuration config, InputSplit inputSplit) {
+	public Mapper(String workerId, Configuration config, MapInputSplit inputSplit) {
 		this.workerId = workerId;
 		this.inputSplit = inputSplit;
 		this.config = config;

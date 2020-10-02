@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import ao.adoop.io.FileSystemManager;
 import ao.adoop.mapreduce.Configuration;
-import ao.adoop.mapreduce.InputSplit;
+import ao.adoop.mapreduce.MapInputSplit;
 import ao.adoop.mapreduce.Mapper;
 import ao.adoop.test.utils.SimpleFileLoader;
 import ao.adoop.test.utils.configurations.TestConfiguration;
@@ -41,7 +41,7 @@ class MapperTest {
 		String path = "src/test/resources/map-input-files/map-input.csv";
 		String mapperId = "Test-ID";
 		Path inputFile = Paths.get(path);
-		InputSplit split = new InputSplit(inputFile, startIndex, endIndex);
+		MapInputSplit split = new MapInputSplit(inputFile, startIndex, endIndex);
 		Mapper mapper = new UnitTestMapper(mapperId, this.config, split);
 		mapper.run();
 		

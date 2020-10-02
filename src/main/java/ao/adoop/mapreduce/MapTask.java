@@ -2,10 +2,10 @@ package ao.adoop.mapreduce;
 
 public class MapTask {
 
-	private InputSplit inputSplit;
+	private MapInputSplit inputSplit;
 	private Class<? extends Mapper> mapperClass;
 
-	public MapTask(Class<? extends Mapper> mapperClass, InputSplit inputSplit) {
+	public MapTask(Class<? extends Mapper> mapperClass, MapInputSplit inputSplit) {
 		this.mapperClass = mapperClass;
 		this.inputSplit = inputSplit;
 	};
@@ -18,7 +18,7 @@ public class MapTask {
 		return this.mapperClass;
 	};
 	
-	public InputSplit getInputSplit() {
+	public MapInputSplit getInputSplit() {
 		return this.inputSplit;
 	}
 

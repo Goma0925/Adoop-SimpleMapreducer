@@ -8,12 +8,13 @@ import javax.naming.InvalidNameException;
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.MultipleOutputs;
+import ao.adoop.mapreduce.ReduceInputSplit;
 import ao.adoop.mapreduce.Reducer;
 
 public class UnitTestMultipleOutputReducer extends Reducer {
 	MultipleOutputs multipleOutput = null;
-	public UnitTestMultipleOutputReducer(String workerId, Configuration config, ArrayList<File> inputFiles) {
-		super(workerId, config, inputFiles);
+	public UnitTestMultipleOutputReducer(String workerId, Configuration config, ReduceInputSplit inputSplit) {
+		super(workerId, config, inputSplit);
 	}
 
 	@Override
@@ -22,7 +23,7 @@ public class UnitTestMultipleOutputReducer extends Reducer {
 	}
 
 	@Override
-	public void reduce(String key, ArrayList<String> values, Context context) throws InvalidNameException {
+	public void reduce(String key, ArrayList<String> values, Context context) {
 		int targetCount = 0;
 		int otherCount = 0;
 		for (String value: values) {

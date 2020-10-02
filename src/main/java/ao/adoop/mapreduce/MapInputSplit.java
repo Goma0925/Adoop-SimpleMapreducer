@@ -6,17 +6,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class InputSplit {
+public class MapInputSplit {
 	private int startIndex = 0;
 	private int endIndex = -1;
 	private Path inputFile = null;
-	public InputSplit(Path inputFile, int startIndex, int endIndex) {
+	public MapInputSplit(Path inputFile, int startIndex, int endIndex) {
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
 		this.inputFile = inputFile;
 	};
 	
-	public InputSplit(Path inputFile) {
+	public MapInputSplit(Path inputFile) {
 		//Use this constructor to assign the entire file to a inputSplit.
 		this.startIndex = -1;
 		this.endIndex = -1;

@@ -10,12 +10,13 @@ import javax.naming.InvalidNameException;
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.MultipleOutputs;
+import ao.adoop.mapreduce.ReduceInputSplit;
 import ao.adoop.mapreduce.Reducer;
 
 public class MultipleOutputReducerForIntegrationTest extends Reducer {
 	public MultipleOutputReducerForIntegrationTest(String workerId, Configuration config,
-			ArrayList<File> inputFiles) {
-		super(workerId, config, inputFiles);
+			ReduceInputSplit inputSplit) {
+		super(workerId, config, inputSplit);
 	}
 
 	MultipleOutputs multipleOutputs = null;
@@ -24,7 +25,7 @@ public class MultipleOutputReducerForIntegrationTest extends Reducer {
 	}
 
 	@Override
-	public void reduce(String key, ArrayList<String> values, Context context) throws InvalidNameException {
+	public void reduce(String key, ArrayList<String> values, Context context) {
 		Map<String, Integer> counts = new HashMap<String, Integer>();
 		int length = values.size();
 		String error = "";

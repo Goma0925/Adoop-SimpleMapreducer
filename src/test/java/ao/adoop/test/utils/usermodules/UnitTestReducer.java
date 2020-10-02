@@ -6,12 +6,13 @@ import java.util.HashMap;
 
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
+import ao.adoop.mapreduce.ReduceInputSplit;
 import ao.adoop.mapreduce.Reducer;
 
 public class UnitTestReducer extends Reducer {
 
-	public UnitTestReducer(String workerId, Configuration config, ArrayList<File> inputFiles) {
-		super(workerId, config, inputFiles);
+	public UnitTestReducer(String workerId, Configuration config, ReduceInputSplit inputSplit) {
+		super(workerId, config, inputSplit);
 	}
 
 	public void reduce(String key, ArrayList<String> inputLines, Context context) {

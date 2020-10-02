@@ -40,9 +40,9 @@ public class FileInputFormat {
 		// Each map task consits of a mapperClass and an inputSplit
 		ArrayList<int[]> splitStartEndList = FileInputFormat.getSplitStartEndList(inputFile, maxSplitSize, dataUnit);
 		ArrayList<MapTask> mapTasks = new ArrayList<MapTask>();
-		InputSplit inputSplit = null;
+		MapInputSplit inputSplit = null;
 		for (int[] startAndEndIndices: splitStartEndList) {
-			inputSplit = new InputSplit(inputFile, startAndEndIndices[0], startAndEndIndices[1]);
+			inputSplit = new MapInputSplit(inputFile, startAndEndIndices[0], startAndEndIndices[1]);
 			mapTasks.add(new MapTask(mapperClass, inputSplit));
 		};
 		return mapTasks;
