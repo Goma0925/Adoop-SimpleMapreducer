@@ -23,6 +23,10 @@ public class MapInputSplit {
 		this.inputFile = inputFile;
 	};
 	
+	public Path getInputPath() {
+		return this.inputFile;
+	}
+	
 	public String[] getLines() throws IOException {
 		//This function loads a particular chunk in a file based on the line start and the end indices.
 		//return| String[] loadedLines: An array containing all the lines of the specified chunk.

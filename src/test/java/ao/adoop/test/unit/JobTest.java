@@ -25,7 +25,7 @@ public class JobTest {
 	//This unit test tests Job, Configuration, and FileInputFormat's functionalities.
 
 	@Test
-	void testSingleInput() {
+	void testSingleInput() throws Exception {
 		//Test if Job can configure a job with a single mapper and a single input file.
 		Path inputFilePath = Paths.get("src/test/resources/map-input-files/integration-test-input1.csv");
 		Class<? extends Mapper> mapperClass = UnitTestMapper.class;
@@ -36,13 +36,13 @@ public class JobTest {
 		FileInputFormat.addInputPath(job, inputFilePath);
 		ArrayList<MapTask> mapTasks = job.getMapTasks();
 		for (MapTask task: mapTasks) {
-			Assertions.assertEquals(inputFilePath.toString(), task.getInputSplit());
-			Assertions.assertEquals(mapperClass, task.getValue());
+			Assertions.assertEquals(inputFilePath, task.getInputSplit().getInputPath());
+			Assertions.assertEquals(mapperClass, task.getMapperClass());
 		};
 	};
 	
 	@Test
-	void testMultipleInputsUsage() {
+	void testMultipleInputsUsage() throws Exception {
 		//Test if Job can configure a job with multiple mappers and a multiple input files.
 		Path[] inputFilePaths = {
 				Paths.get("src/test/resources/map-input-files/map-input.csv"),
@@ -63,19 +63,17 @@ public class JobTest {
 			MultipleInputs.addInputPath(job, inputFilePaths[i], mapperClasses.get(i));
 		};
 		
-		ArrayList<Pair<Path, Class<? extends Mapper>>> mapTasks = job.getMapTasks();
-		for (int i=0; i<inputFilePaths.length; i++) {
-			Path storedPath = mapTasks.get(i).getKey();
-			Class<? extends Mapper> storedMapperClass = mapTasks.get(i).getValue();
-			Assertions.assertEquals(inputFilePaths[i], storedPath);
-			Assertions.assertEquals(mapperClasses.get(i), storedMapperClass);
+		ArrayList<MapTask> mapTasks = job.getMapTasks();
+		for (int i=0; i<mapTasks.size(); i++) {
+			Assertions.assertEquals(inputFilePaths[i], mapTasks.get(i).getInputSplit().getInputPath());
+			Assertions.assertEquals(mapperClasses.get(i), mapTasks.get(i).getMapperClass());
 		};
 	};
 	
 	@Test
 	void testSetOutputPath() throws NotDirectoryException {
 		Configuration config = new TestConfiguration();
-		Path outputFilePath = Paths.get(config.finalOutputDir.toString());
+		Path outputFilePath = Paths.get("src/test/resources/map-input-files/");
 		Job job = Job.getInstance(config, "Test job name");
 		
 		FileOutputFormat.setOutputPath(job, outputFilePath);

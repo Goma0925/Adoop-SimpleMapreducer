@@ -10,7 +10,6 @@ public class Job {
 	protected String jobName = null;
 	protected ArrayList<MapTask> mapTasks = new ArrayList<MapTask>();
 	private Class<? extends Reducer> reducerClass;
-	private Path finalOutputDir = null;
 	private Class<? extends Mapper> defaultMapperClass = null;
 	
 	public Job(Configuration config, String jobName) {
@@ -59,11 +58,11 @@ public class Job {
 		if (!Files.isDirectory(finalOutputDir)) {
 			throw new NotDirectoryException(finalOutputDir.toAbsolutePath().toString());
 		}
-		this.finalOutputDir = finalOutputDir;
+		this.config.setFinalOutputDir(finalOutputDir);
 	};
 
 	public Path getOutputPath() {
-		return this.finalOutputDir;
+		return this.config.getFinalOutputDir();
 	};
 	
 	private void check() throws NoMapperSetException, NotDirectoryException {
