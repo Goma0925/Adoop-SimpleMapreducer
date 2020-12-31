@@ -4,7 +4,7 @@ This application is a Java program to perform mapreduce algorithm on text files 
 
 ## Distribution
 
-This project is a Maven project including unit and integration tests. You can start using by importing it in [Eclipse](https://www.lagomframework.com/documentation/1.6.x/java/EclipseMavenInt.html) or other IDE as well. The exe
+This project is a Maven project including unit and integration tests. You can start using by importing it in [Eclipse](https://www.lagomframework.com/documentation/1.6.x/java/EclipseMavenInt.html) or other IDE as well. 
 
 ## What Adoop can do
 
