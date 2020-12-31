@@ -1,6 +1,5 @@
 package ao.adoop.test.utils.usermodules;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 

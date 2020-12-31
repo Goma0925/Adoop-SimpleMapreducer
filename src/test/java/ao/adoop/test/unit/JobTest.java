@@ -19,7 +19,6 @@ import ao.adoop.test.utils.configurations.TestConfiguration;
 import ao.adoop.test.utils.usermodules.UnitTestMapper;
 import ao.adoop.test.utils.usermodules.UnitTestMapper2;
 import ao.adoop.test.utils.usermodules.UnitTestMapper3;
-import javafx.util.Pair;
 
 public class JobTest {
 	//This unit test tests Job, Configuration, and FileInputFormat's functionalities.

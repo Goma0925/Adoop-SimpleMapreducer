@@ -1,12 +1,6 @@
 package ao.adoop.test.utils.usermodules;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.naming.InvalidNameException;
-
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;
 import ao.adoop.mapreduce.MultipleOutputs;
@@ -26,23 +20,29 @@ public class MultipleOutputReducerForIntegrationTest extends Reducer {
 
 	@Override
 	public void reduce(String key, ArrayList<String> values, Context context) {
-		Map<String, Integer> counts = new HashMap<String, Integer>();
-		int length = values.size();
+//		Map<String, Integer> counts = new HashMap<String, Integer>();
 		String error = "";
+		int count = 0;
+		int length = values.size();
 		for (int i=0; i<length; i++) {
 			try {
-				counts.putIfAbsent(key, 0);
-				counts.put(key, counts.get(key) + Integer.parseInt(values.get(i)));				
+				count += Integer.parseInt(values.get(i));			
 			}catch(Exception e){
-				error += values.get(i);
+				// Record the error value and its key.
+				error += key + " : " + values.get(i) + "\n";
 			}
 		};
+		
+		//Direct outputs of different keys to different output directories.
 		if (key.equals("KEY=1") || key.equals("KEY=2")) {
-			this.multipleOutputs.write(key, Integer.toString(counts.get(key)), "/GROUP1/");
+			// The third parameter expresses a relative output path within the outputDir specified in Driver.
+			// The results of KEY=1 and KEY=2 will be written to output-dir/GROUP1
+			this.multipleOutputs.write(key, Integer.toString(count), "/GROUP1/");
 		}else {
-			this.multipleOutputs.write(key, Integer.toString(counts.get(key)), "/GROUP2/");
+			this.multipleOutputs.write(key, Integer.toString(count), "/GROUP2/");
 		}
 		if (!error.equals("")) {
+			// You can also direct error output to different file.
 			this.multipleOutputs.write("ERROR", error, "/ERROR/");
 		}
 		

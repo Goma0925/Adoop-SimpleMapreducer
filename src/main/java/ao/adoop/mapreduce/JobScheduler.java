@@ -1,12 +1,10 @@
 package ao.adoop.mapreduce;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -44,6 +42,7 @@ public class JobScheduler {
 		//Reduce
 		this.runReduce(this.job.getReducerClass());
 		this.userInterface.doOnExit(this.job.config.getFinalOutputDir());
+		fileManager.clearMapOutputBufferDir();
 	};
 
 	public void runMap(ArrayList<MapTask> mapTasks) throws Exception {

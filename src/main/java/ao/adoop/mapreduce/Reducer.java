@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javafx.util.Pair;
 
 public abstract class Reducer implements Runnable{

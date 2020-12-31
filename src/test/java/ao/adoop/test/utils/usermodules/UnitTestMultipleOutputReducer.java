@@ -1,9 +1,6 @@
 package ao.adoop.test.utils.usermodules;
 
-import java.io.File;
 import java.util.ArrayList;
-
-import javax.naming.InvalidNameException;
 
 import ao.adoop.mapreduce.Configuration;
 import ao.adoop.mapreduce.Context;

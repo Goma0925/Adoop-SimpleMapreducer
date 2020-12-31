@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import ao.adoop.mapreduce.Context;
-import ao.adoop.mapreduce.Job;
 import ao.adoop.mapreduce.MultipleOutputs;
 
 class ContextTest {
