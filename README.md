@@ -160,125 +160,125 @@ Adoop follows several Hadoop's API in a similar manner but with limited capabili
 
 3. Output to mutiple files. 
 
-You can set write results into different files based on the key.
+	You can set write results into different files based on the key.
 
-```java
-// Driver.java
-package your.package;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import ao.adoop.mapreduce.*; 
+	```java
+	// Driver.java
+	package your.package;
+	import java.nio.file.Path;
+	import java.nio.file.Paths;
+	import ao.adoop.mapreduce.*; 
 
-public class Driver {
-	public static void main(String[] args) throws Exception {
-		Path inputFilePath = Paths.get("path/input.csv");
-		Path outputDir = Paths.get("/output/"); // The directory for the output file
-		
-		Configuration config = new Configuration();
-		Job job = Job.getInstance(config, "Test Job"); //String to identify different jobs.
-		
-		//Set a mapper and a reducer class to the job.
-		job.setMapperClass(TestMapper.class);
-		job.setReducerClass(MultiplOutputReducer .class);
-		
-		//Set a reducer class
-		job.setReducerClass(MultipleOutputReducer.class);
-		
-		//Set an output directory. 
-		FileOutputFormat.setOutputPath(job, outputDir);
-				
-		job.waitForCompletion(true);
-	}
-};
-```
+	public class Driver {
+		public static void main(String[] args) throws Exception {
+			Path inputFilePath = Paths.get("path/input.csv");
+			Path outputDir = Paths.get("/output/"); // The directory for the output file
 
-```java
-// TestReducer.java
-package ao.adoop.test.utils.usermodules;
+			Configuration config = new Configuration();
+			Job job = Job.getInstance(config, "Test Job"); //String to identify different jobs.
 
-import java.util.ArrayList;
-import ao.adoop.mapreduce.Configuration;
-import ao.adoop.mapreduce.Context;
-import ao.adoop.mapreduce.MultipleOutputs;
-import ao.adoop.mapreduce.ReduceInputSplit;
-import ao.adoop.mapreduce.Reducer;
+			//Set a mapper and a reducer class to the job.
+			job.setMapperClass(TestMapper.class);
+			job.setReducerClass(MultiplOutputReducer .class);
 
-public class MultipleOutputReducerForIntegrationTest extends Reducer {
-	public MultipleOutputReducerForIntegrationTest(String workerId, Configuration config,
-			ReduceInputSplit inputSplit) {
-		super(workerId, config, inputSplit);
-	}
+			//Set a reducer class
+			job.setReducerClass(MultipleOutputReducer.class);
 
-	MultipleOutputs multipleOutputs = null;
-	protected void setup(Context context) {
-		this.multipleOutputs = new MultipleOutputs(context);
-	}
+			//Set an output directory. 
+			FileOutputFormat.setOutputPath(job, outputDir);
 
-	@Override
-	public void reduce(String key, ArrayList<String> values, Context context) {
-//		Map<String, Integer> counts = new HashMap<String, Integer>();
-		String error = "";
-		int count = 0;
-		int length = values.size();
-		for (int i=0; i<length; i++) {
-			try {
-				count += Integer.parseInt(values.get(i));			
-			}catch(Exception e){
-				// Record the error value and its key.
-				error += key + " : " + values.get(i) + "\n";
+			job.waitForCompletion(true);
+		}
+	};
+	```
+
+	```java
+	// TestReducer.java
+	package ao.adoop.test.utils.usermodules;
+
+	import java.util.ArrayList;
+	import ao.adoop.mapreduce.Configuration;
+	import ao.adoop.mapreduce.Context;
+	import ao.adoop.mapreduce.MultipleOutputs;
+	import ao.adoop.mapreduce.ReduceInputSplit;
+	import ao.adoop.mapreduce.Reducer;
+
+	public class MultipleOutputReducerForIntegrationTest extends Reducer {
+		public MultipleOutputReducerForIntegrationTest(String workerId, Configuration config,
+				ReduceInputSplit inputSplit) {
+			super(workerId, config, inputSplit);
+		}
+
+		MultipleOutputs multipleOutputs = null;
+		protected void setup(Context context) {
+			this.multipleOutputs = new MultipleOutputs(context);
+		}
+
+		@Override
+		public void reduce(String key, ArrayList<String> values, Context context) {
+	//		Map<String, Integer> counts = new HashMap<String, Integer>();
+			String error = "";
+			int count = 0;
+			int length = values.size();
+			for (int i=0; i<length; i++) {
+				try {
+					count += Integer.parseInt(values.get(i));			
+				}catch(Exception e){
+					// Record the error value and its key.
+					error += key + " : " + values.get(i) + "\n";
+				}
+			};
+
+			//Direct outputs of different keys to different output directories.
+			if (key.equals("KEY=1") || key.equals("KEY=2")) {
+				// The third parameter expresses a relative output path within the outputDir specified in Driver.
+				// The results of KEY=1 and KEY=2 will be written to output-dir/GROUP1
+				this.multipleOutputs.write(key, Integer.toString(count), "/GROUP1/");
+			}else {
+				this.multipleOutputs.write(key, Integer.toString(count), "/GROUP2/");
 			}
-		};
-		
-		//Direct outputs of different keys to different output directories.
-		if (key.equals("KEY=1") || key.equals("KEY=2")) {
-			// The third parameter expresses a relative output path within the outputDir specified in Driver.
-			// The results of KEY=1 and KEY=2 will be written to output-dir/GROUP1
-			this.multipleOutputs.write(key, Integer.toString(count), "/GROUP1/");
-		}else {
-			this.multipleOutputs.write(key, Integer.toString(count), "/GROUP2/");
+			if (!error.equals("")) {
+				// You can also direct error output to different file.
+				this.multipleOutputs.write("ERROR", error, "/ERROR/");
+			}
+
 		}
-		if (!error.equals("")) {
-			// You can also direct error output to different file.
-			this.multipleOutputs.write("ERROR", error, "/ERROR/");
+	}
+	```
+
+	### Configuration
+
+	You can also set several configuration about the MapReduce process. 
+
+	```java
+	// Driver.java
+	package your.package;
+	import java.nio.file.Path;
+	import java.nio.file.Paths;
+	import ao.adoop.mapreduce.*; 
+
+	public class Driver {
+		public static void main(String[] args) throws Exception {
+			Path inputFilePath = Paths.get("path/input.csv");
+			Path outputDir = Paths.get("/output/"); 
+
+			Configuration config = new Configuration();
+			// Set the maximum thread that can be used in rumtime.
+			config.setMaxThreadNum(10);
+			// Set the amount of data each thread processes. You can set by number and unit.
+			// Set each thread's processing limit to 30MB (Approximately)
+			config.setThreadMaxThreashholdUnit("MB");
+			config.setThreadMaxThreashold(30);
+
+			Job job = Job.getInstance(config, "Test Job"); //String to identify different jobs.
+
+			job.setMapperClass(TestMapper.class);
+			job.setReducerClass(TestReducer.class);
+
+			FileInputFormat.addInputPath(job, inputFilePath);
+			FileOutputFormat.setOutputPath(job, outputDir);
+
+			job.waitForCompletion(true);
 		}
-		
 	}
-}
-```
-
-### Configuration
-
-You can also set several configuration about the MapReduce process. 
-
-```java
-// Driver.java
-package your.package;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import ao.adoop.mapreduce.*; 
-
-public class Driver {
-	public static void main(String[] args) throws Exception {
-		Path inputFilePath = Paths.get("path/input.csv");
-		Path outputDir = Paths.get("/output/"); 
-		
-		Configuration config = new Configuration();
-		// Set the maximum thread that can be used in rumtime.
-		config.setMaxThreadNum(10);
-		// Set the amount of data each thread processes. You can set by number and unit.
-		// Set each thread's processing limit to 30MB (Approximately)
-		config.setThreadMaxThreashholdUnit("MB");
-		config.setThreadMaxThreashold(30);
-
-		Job job = Job.getInstance(config, "Test Job"); //String to identify different jobs.
-		
-		job.setMapperClass(TestMapper.class);
-		job.setReducerClass(TestReducer.class);
-		
-		FileInputFormat.addInputPath(job, inputFilePath);
-		FileOutputFormat.setOutputPath(job, outputDir);
-		
-		job.waitForCompletion(true);
-	}
-}
-```
+	```
